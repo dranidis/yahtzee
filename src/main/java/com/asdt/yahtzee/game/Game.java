@@ -1,9 +1,7 @@
-package com.asdt.yahtzee;
+package com.asdt.yahtzee.game;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.asdt.yahtzee.game.Die;
 
 public class Game {
 

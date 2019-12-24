@@ -1,5 +1,7 @@
 package com.asdt.yahtzee;
 
+import com.asdt.yahtzee.game.Game;
+
 /**
  * Hello world!
  *
