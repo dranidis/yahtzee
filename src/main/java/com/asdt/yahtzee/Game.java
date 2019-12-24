@@ -2,7 +2,6 @@ package com.asdt.yahtzee;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import com.asdt.yahtzee.game.Die;
 
@@ -12,9 +11,10 @@ public class Game {
     private List<Die> kept;
     private int roll = 1;
     private String[] players;
+    private int currentPlayer = 0;
 
     public Game() {
-        players = new String[] {"Dimitris", "Andreas"};
+        players = new String[] { "Dimitris", "Andreas" };
     }
 
     public void rollKeeping(String playerName, int... keep) {
@@ -43,6 +43,7 @@ public class Game {
         }
         if (roll == 3) {
             keepAll(playerName);
+            return;
         }
         roll++;
     }
@@ -68,44 +69,18 @@ public class Game {
         return "Dice: " + dice.toString() + " - Kept: " + kept.toString();
     }
 
-    public void play(String name) {
-        Scanner s = new Scanner(System.in);
-
-        roll = 1;
-        rollKeeping(name);
-
-        System.out.println(name + "'s turn");
-        System.out.println(this);
-
-        for (int r = 0; r < 2; r++) {
-            System.out.println(name + " Pick dice to keep:");
-            List<Integer> list = new ArrayList<>();
-            int keep;
-            do {
-                keep = s.nextInt();
-                if (keep > 0) {
-                    list.add(keep);
-                }
-            } while (keep != 0);
-            int[] array = list.stream().mapToInt(i -> i).toArray();
-
-            rollKeeping(name, array);
-
-            System.out.println(this);
-        }
-        // s.close();
-    }
-
-    public void round() {
-        for(String player: players)
-            play(player);
-    }
-
     public void keepAll(String name) {
         for (Die d : dice) {
             kept.add(d);
         }
         dice.removeAll(kept);
+        roll = 1; // for next player
+    }
 
+    public String getNextPlayer() {
+        if (currentPlayer < players.length)
+            return players[currentPlayer++];
+        else
+            return null;
     }
 }
