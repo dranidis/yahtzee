@@ -1,84 +1,63 @@
 package com.asdt.yahtzee.game;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Game {
 
-    private List<Die> dice;
-    private List<Die> kept;
-    private int roll = 1;
-    private String[] players;
-    private int currentPlayer = 0;
+    private int currentPlayerIndex = 0;
+    private Player currentPlayer;
+    private Map<String, Player> players = new HashMap<>();
+    private ArrayList<Player> roundPlayers;
 
     public Game() {
-        players = new String[] { "Dimitris", "Andreas" };
     }
 
     public void rollKeeping(String playerName, int... keep) {
-        if (roll == 1) {
-            if (keep.length > 0) {
-                throw new RuntimeException("Cannot keep dice at first roll");
-            }
-            dice = new ArrayList<>();
-            kept = new ArrayList<>();
-            for (int i = 0; i < 5; i++) {
-                dice.add(new Die());
-            }
+        Player called = players.get(playerName);
+        if (called != currentPlayer) {
+            throw new RuntimeException(playerName + " Not your turn");
         }
-        for (int k : keep) {
-            if (k < 1 || k > dice.size()) {
-                throw new RuntimeException("Invalid die index");
-            }
-            Die die = dice.get(k - 1);
-            kept.add(die);
-        }
-        for (Die k : kept) {
-            dice.remove(k);
-        }
-        for (Die die : dice) {
-            die.reroll();
-        }
-        if (roll == 3) {
-            keepAll(playerName);
-            return;
-        }
-        roll++;
+        called.rollKeeping(keep);
     }
 
     public int[] getDice() {
-        int[] ds = new int[dice.size()];
-        for (int i = 0; i < dice.size(); i++) {
-            ds[i] = dice.get(i).getNumber();
-        }
-        return ds;
+        return currentPlayer.getDice();
     }
 
     public int[] getKept() {
-        int[] ds = new int[kept.size()];
-        for (int i = 0; i < kept.size(); i++) {
-            ds[i] = kept.get(i).getNumber();
-        }
-        return ds;
+        return currentPlayer.getKept();
     }
 
     @Override
     public String toString() {
-        return "Dice: " + dice.toString() + " - Kept: " + kept.toString();
+        return currentPlayer.toString();
     }
 
-    public void keepAll(String name) {
-        for (Die d : dice) {
-            kept.add(d);
+    public void keepAll(String playerName) {
+        Player called = players.get(playerName);
+        if (called != currentPlayer) {
+            throw new RuntimeException("Not your turn");
         }
-        dice.removeAll(kept);
-        roll = 1; // for next player
+        called.keepAll();
     }
 
     public String getNextPlayer() {
-        if (currentPlayer < players.length)
-            return players[currentPlayer++];
-        else
+        if (currentPlayerIndex < roundPlayers.size()) {
+            currentPlayer = roundPlayers.get(currentPlayerIndex++);
+            return currentPlayer.getName();
+        } else
             return null;
+    }
+
+    public void addPlayer(String name) {
+        players.put(name, new Player(name));
+    }
+
+    public void startRound() {
+        roundPlayers = new ArrayList<Player>(players.values());
+        currentPlayerIndex = 0;
+        currentPlayer = roundPlayers.get(currentPlayerIndex);
     }
 }

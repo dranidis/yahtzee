@@ -12,16 +12,19 @@ public class UI {
 
     public UI(Game game) {
         this.game = game;
+        game.addPlayer("Dimitris");
+        game.addPlayer("Andreas");
         s = new Scanner(System.in);
     }
 
     public void round() {
+        game.startRound();
         String player = game.getNextPlayer();
         while (player != null) {
             play(player);
             player = game.getNextPlayer();
         }
-        s.close();
+        // s.close();
     }
 
     public void play(String name) {
