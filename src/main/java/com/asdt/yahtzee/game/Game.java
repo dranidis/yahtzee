@@ -14,12 +14,46 @@ public class Game {
     public Game() {
     }
 
+    /**
+     * Roll the dice. Optionally write which dice to keep from previous roll.
+     *
+     * @param playerName Player calling
+     * @param keep       vararg which dice to keep
+     */
     public void rollKeeping(String playerName, int... keep) {
         Player called = players.get(playerName);
         if (called != currentPlayer) {
             throw new RuntimeException(playerName + " Not your turn");
         }
         called.rollKeeping(keep);
+    }
+
+    /**
+     * Decide to finish your turn (before final roll) by keeping all dice.
+     *
+     * @param playerName Player calling
+     */
+    public void keepAll(String playerName) {
+        Player called = players.get(playerName);
+        if (called != currentPlayer) {
+            throw new RuntimeException("Not your turn");
+        }
+        called.keepAll();
+    }
+
+    /**
+     * Choose category to score for all kept dice
+     *
+     * @param playerName
+     * @param categoryName
+     * @return
+     */
+    public int score(String playerName, String categoryName) {
+        Player called = players.get(playerName);
+        if (called != currentPlayer) {
+            throw new RuntimeException("Not your turn");
+        }
+        return called.score(categoryName);
     }
 
     public int[] getDice() {
@@ -33,14 +67,6 @@ public class Game {
     @Override
     public String toString() {
         return currentPlayer.toString();
-    }
-
-    public void keepAll(String playerName) {
-        Player called = players.get(playerName);
-        if (called != currentPlayer) {
-            throw new RuntimeException("Not your turn");
-        }
-        called.keepAll();
     }
 
     public String getNextPlayer() {
@@ -60,4 +86,12 @@ public class Game {
         currentPlayerIndex = 0;
         currentPlayer = roundPlayers.get(currentPlayerIndex);
     }
+
+    public String getCurrentPlayersName() {
+        return currentPlayer.getName();
+    }
+
+	public int getScore(String name) {
+		return players.get(name).getScore();
+	}
 }

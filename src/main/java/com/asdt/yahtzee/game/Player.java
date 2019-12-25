@@ -3,20 +3,26 @@ package com.asdt.yahtzee.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.asdt.yahtzee.game.score.ScoreFactory;
+import com.asdt.yahtzee.game.score.ScoreStrategy;
+
 public class Player {
 
-	private String name;
+    private String name;
     private List<Die> dice;
     private List<Die> kept;
     private int roll = 1;
+    private List<String> scored;
+    private int score = 0;
 
     public Player(String name) {
         this.name = name;
-	}
+        scored = new ArrayList<>();
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
     public void rollKeeping(int... keep) {
         if (roll == 1) {
@@ -64,6 +70,7 @@ public class Player {
         }
         return ds;
     }
+
     public void keepAll() {
         for (Die d : dice) {
             kept.add(d);
@@ -74,6 +81,29 @@ public class Player {
 
     @Override
     public String toString() {
-        return name + " Dice: " + dice.toString() + " - Kept: " + kept.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append(name + "\n");
+        sb.append("Already scored: " + scored + "\n");
+        sb.append("Total: " + score + "\n");
+        sb.append("Dice: " + dice.toString() + " - Kept: " + kept.toString());
+        return sb.toString();
+    }
+
+    public int score(String categoryName) {
+        if (scored.contains(categoryName))
+            return -1;
+
+        ScoreStrategy ss = ScoreFactory.getInstance().getScoreStrategy(categoryName);
+        if (ss == null)
+            return -2;
+
+        scored.add(categoryName);
+        int s = ss.calculate(kept);
+        score += s;
+        return s;
+    }
+
+    public int getScore() {
+        return score;
     }
 }

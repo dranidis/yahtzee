@@ -127,4 +127,78 @@ public class AppTest {
         game.rollKeeping("p2");
     }
 
+
+    @Test
+    public void scoredCategory() {
+        game.getNextPlayer();
+
+        game.rollKeeping("p1");
+        game.keepAll("p1");
+        int score1 = game.score("p1", "1s");
+        assertTrue("Category 1 not used by p1 positive score", score1 >= 0);
+
+        /* scores */
+        int totalScore1 = game.getScore("p1");
+        assertEquals("Total score of p1 is first score", score1, totalScore1);
+        int totalScore2 = game.getScore("p2");
+        assertEquals("Total score of p2 (before playing) 0", 0, totalScore2);
+
+
+        game.getNextPlayer();
+
+        game.rollKeeping("p2");
+        game.keepAll("p2");
+
+        int score2 = game.score("p2", "1s");
+        assertTrue("Category 1 not used by p2 positive score", score2 >= 0);
+
+        /* scores */
+        totalScore1 = game.getScore("p1");
+        assertEquals("Total score of p1 is first score", score1, totalScore1);
+        totalScore2 = game.getScore("p2");
+        assertEquals("Total score of p2 (after playing) score2", score2, totalScore2);
+
+
+        game.startRound();
+
+        game.rollKeeping("p1");
+        game.keepAll("p1");
+        int score11 = game.score("p1", "2s");
+        assertTrue("Category 2s not used by p1 positive score", score11 >= 0);
+
+        /* scores */
+        totalScore1 = game.getScore("p1");
+        assertEquals("Total score of p1 is first and secod score", score1 + score11, totalScore1);
+        totalScore2 = game.getScore("p2");
+        assertEquals("Total score of p2 (after playing) score2", score2, totalScore2);
+
+    }
+
+    @Test
+    public void alreadyScoredCategory() {
+        game.getNextPlayer();
+
+        game.rollKeeping("p1");
+        game.keepAll("p1");
+        int score = game.score("p1", "1s");
+        assertTrue("Category 1 not used by p1 positive score", score >= 0);
+
+        System.out.println(game.getCurrentPlayersName());
+        game.getNextPlayer();
+        System.out.println(game.getCurrentPlayersName());
+
+        game.rollKeeping("p2");
+        game.keepAll("p2");
+        score = game.score("p2", "1s");
+        assertTrue("Category 1 not used by p2 positive score", score >= 0);
+
+        game.startRound();
+
+        game.rollKeeping("p1");
+        game.keepAll("p1");
+        score = game.score("p1", "1s");
+        assertEquals("Category 1 already used by p1", -1, score);
+    }
+
+
 }

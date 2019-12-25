@@ -6,7 +6,14 @@ public class Die {
 
     int number;
 
-    public void reroll() {
+    public Die(int i) {
+        number = i;
+	}
+
+	public Die() {
+	}
+
+	public void reroll() {
         Random r = new Random();
         number = r.nextInt(6) + 1;
     }

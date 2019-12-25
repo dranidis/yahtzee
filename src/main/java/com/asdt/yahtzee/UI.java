@@ -13,7 +13,7 @@ public class UI {
     public UI(Game game) {
         this.game = game;
         game.addPlayer("Dimitris");
-        game.addPlayer("Andreas");
+        // game.addPlayer("Andreas");
         s = new Scanner(System.in);
     }
 
@@ -35,7 +35,7 @@ public class UI {
         System.out.println(game);
 
         for (int r = 0; r < 2; r++) {
-            System.out.println(name + " Pick dice to keep:");
+            System.out.println(name + " Pick dice to keep: (0) to end choice, (-1) to keep all");
             List<Integer> list = new ArrayList<>();
             int keep;
             do {
@@ -43,13 +43,26 @@ public class UI {
                 if (keep > 0) {
                     list.add(keep);
                 }
-            } while (keep != 0);
+            } while (keep > 0);
+            if (keep == -1) {
+                game.keepAll(name);
+                System.out.println(game);
+                break;
+            }
             int[] array = list.stream().mapToInt(i -> i).toArray();
-
             game.rollKeeping(name, array);
-
             System.out.println(game);
         }
+        System.out.println("Enter a scoring category: ");
+        String categoryName = s.next();
+        int score = game.score(name, categoryName);
+        while (score < 0) {
+            System.out.println("Invalid choice!");
+            categoryName = s.next();
+            score = game.score(name, categoryName);
+        }
+        System.out.println("Score: " + score);
+        System.out.println("Total Score: " + game.getScore(name));
     }
 
 }
