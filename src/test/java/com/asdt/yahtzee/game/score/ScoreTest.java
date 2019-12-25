@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.asdt.yahtzee.game.Die;
 import com.asdt.yahtzee.game.score.ScoreFactory;
@@ -169,6 +170,13 @@ public class ScoreTest {
 
         int scoreS5 = ScoreFactory.getInstance().getScoreStrategy("s5").calculate(kept);
         assertEquals("s4 category: 1 2 3 4 5 scores total: 40", 40, scoreS5);
+    }
+
+    @Test
+    public void categories13() {
+        Map<String,Integer> sheet = ScoreFactory.getInstance().getScoringSheet();
+        assertEquals("sheet has 13 + 2 (UB)+(YB) categories", 15, sheet.size());
+
     }
 
 }

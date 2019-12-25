@@ -1,11 +1,18 @@
 package com.asdt.yahtzee.game.score;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ScoreFactory {
 
     private Map<String,ScoreStrategy> scoreStrategies;
+
+    private List<String> categories = new ArrayList<>(Arrays.asList(new String[] {
+        "1s", "2s","3s","4s","5s","6s","UB", "3k","4k","fh","s4","s5","5k","ch", "YB"
+    }));
 
     private ScoreFactory() {
         scoreStrategies = new HashMap<>();
@@ -32,6 +39,13 @@ public class ScoreFactory {
 
 	public ScoreStrategy getScoreStrategy(String categoryName) {
 		return scoreStrategies.get(categoryName);
+	}
+
+	public Map<String, Integer> getScoringSheet() {
+        Map<String, Integer> scoringSheet = new HashMap<String, Integer>();
+        for(String cat: categories)
+            scoringSheet.put(cat, null);
+		return scoringSheet;
 	}
 
 }

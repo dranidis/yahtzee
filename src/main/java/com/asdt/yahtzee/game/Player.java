@@ -2,10 +2,11 @@ package com.asdt.yahtzee.game;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
 import com.asdt.yahtzee.game.score.ScoreFactory;
 import com.asdt.yahtzee.game.score.ScoreStrategy;
+import com.asdt.yahtzee.game.util.SumBuilder;
 
 public class Player {
 
@@ -13,7 +14,7 @@ public class Player {
     private Die[] dice = new Die[5];
     private boolean[] kept = new boolean[5];
     private int roll = 1;
-    private List<String> scored;
+    Map<String, Integer> scored;
     private int score = 0;
 
     public Player(String name) {
@@ -21,7 +22,7 @@ public class Player {
         for (int d = 0; d < dice.length; d++) {
             dice[d] = new Die(6);
         }
-        scored = new ArrayList<>();
+        scored = ScoreFactory.getInstance().getScoringSheet();
     }
 
     public String getName() {
@@ -75,10 +76,16 @@ public class Player {
     }
 
     public int score(String categoryName) {
-        if (scored.contains(categoryName))
+        // already scored category
+        if (scored.get(categoryName) != null)
             return -1;
 
+        // bonus categories are not selected for scoring by user
+        if (categoryName.equals("UB") || categoryName.equals("YB"))
+            return -3;
+
         ScoreStrategy ss = ScoreFactory.getInstance().getScoreStrategy(categoryName);
+        // unimplemented strategy, invalid category name
         if (ss == null)
             return -2;
 
@@ -86,13 +93,24 @@ public class Player {
         for (int d = 0; d < kept.length; d++)
             kept[d] = false;
 
-        scored.add(categoryName);
         int s = ss.calculate(new ArrayList<Die>(Arrays.asList(dice)));
-        score += s;
+        scored.put(categoryName, s);
         return s;
     }
 
     public int getScore() {
-        return score;
+        SumBuilder sb = new SumBuilder();
+        sb.add(scored.get("1s")).add(scored.get("2s")).add(scored.get("3s")).add(scored.get("4s")).add(scored.get("5s"))
+                .add(scored.get("6s"));
+
+        if (sb.getSum() >= 63) {
+            scored.put("UB", 35);
+            sb.add(35);
+        }
+
+        sb.add(scored.get("3k")).add(scored.get("4k")).add(scored.get("s4")).add(scored.get("s5")).add(scored.get("fh"))
+                .add(scored.get("5k")).add(scored.get("ch"));
+
+        return sb.getSum();
     }
 }
