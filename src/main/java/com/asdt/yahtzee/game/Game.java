@@ -48,7 +48,7 @@ public class Game {
      * @param categoryName
      * @return
      */
-    public int score(String playerName, String categoryName) {
+    public int scoreACategory(String playerName, String categoryName) {
         Player called = players.get(playerName);
         if (called != currentPlayer) {
             throw new RuntimeException("Not your turn");

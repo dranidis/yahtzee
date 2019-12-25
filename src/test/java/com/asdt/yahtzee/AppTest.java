@@ -134,7 +134,7 @@ public class AppTest {
 
         game.rollKeeping("p1");
         game.keepAll("p1");
-        int score1 = game.score("p1", "1s");
+        int score1 = game.scoreACategory("p1", "1s");
         assertTrue("Category 1 not used by p1 positive score", score1 >= 0);
 
         /* scores */
@@ -149,7 +149,7 @@ public class AppTest {
         game.rollKeeping("p2");
         game.keepAll("p2");
 
-        int score2 = game.score("p2", "1s");
+        int score2 = game.scoreACategory("p2", "1s");
         assertTrue("Category 1 not used by p2 positive score", score2 >= 0);
 
         /* scores */
@@ -163,7 +163,7 @@ public class AppTest {
 
         game.rollKeeping("p1");
         game.keepAll("p1");
-        int score11 = game.score("p1", "2s");
+        int score11 = game.scoreACategory("p1", "2s");
         assertTrue("Category 2s not used by p1 positive score", score11 >= 0);
 
         /* scores */
@@ -180,7 +180,7 @@ public class AppTest {
 
         game.rollKeeping("p1");
         game.keepAll("p1");
-        int score = game.score("p1", "1s");
+        int score = game.scoreACategory("p1", "1s");
         assertTrue("Category 1 not used by p1 positive score", score >= 0);
 
         System.out.println(game.getCurrentPlayersName());
@@ -189,14 +189,14 @@ public class AppTest {
 
         game.rollKeeping("p2");
         game.keepAll("p2");
-        score = game.score("p2", "1s");
+        score = game.scoreACategory("p2", "1s");
         assertTrue("Category 1 not used by p2 positive score", score >= 0);
 
         game.startRound();
 
         game.rollKeeping("p1");
         game.keepAll("p1");
-        score = game.score("p1", "1s");
+        score = game.scoreACategory("p1", "1s");
         assertEquals("Category 1 already used by p1", -1, score);
     }
 

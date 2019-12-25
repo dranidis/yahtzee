@@ -55,11 +55,11 @@ public class UI {
         }
         System.out.println("Enter a scoring category: ");
         String categoryName = s.next();
-        int score = game.score(name, categoryName);
+        int score = game.scoreACategory(name, categoryName);
         while (score < 0) {
             System.out.println("Invalid choice!");
             categoryName = s.next();
-            score = game.score(name, categoryName);
+            score = game.scoreACategory(name, categoryName);
         }
         System.out.println("Score: " + score);
         System.out.println("Total Score: " + game.getScore(name));
