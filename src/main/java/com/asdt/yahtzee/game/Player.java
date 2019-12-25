@@ -1,6 +1,7 @@
 package com.asdt.yahtzee.game;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.asdt.yahtzee.game.score.ScoreFactory;
@@ -9,14 +10,17 @@ import com.asdt.yahtzee.game.score.ScoreStrategy;
 public class Player {
 
     private String name;
-    private List<Die> dice;
-    private List<Die> kept;
+    private Die[] dice = new Die[5];
+    private boolean[] kept = new boolean[5];
     private int roll = 1;
     private List<String> scored;
     private int score = 0;
 
     public Player(String name) {
         this.name = name;
+        for (int d = 0; d < dice.length; d++) {
+            dice[d] = new Die(6);
+        }
         scored = new ArrayList<>();
     }
 
@@ -24,59 +28,28 @@ public class Player {
         return name;
     }
 
-    public void rollKeeping(int... keep) {
-        if (roll == 1) {
-            if (keep.length > 0) {
-                throw new RuntimeException("Cannot keep dice at first roll");
-            }
-            dice = new ArrayList<>();
-            kept = new ArrayList<>();
-            for (int i = 0; i < 5; i++) {
-                dice.add(new Die());
+    public void rollKeeping(boolean[] keep) {
+        if (roll > 3) {
+            throw new RuntimeException("You cannot roll anymore");
+        }
+        if (roll != 1) { // ignore if first roll
+            for (int d = 0; d < dice.length; d++) {
+                kept[d] = keep[d];
             }
         }
-        for (int k : keep) {
-            if (k < 1 || k > dice.size()) {
-                throw new RuntimeException("Invalid die index");
-            }
-            Die die = dice.get(k - 1);
-            kept.add(die);
-        }
-        for (Die k : kept) {
-            dice.remove(k);
-        }
-        for (Die die : dice) {
-            die.reroll();
-        }
-        if (roll == 3) {
-            keepAll();
-            return;
+        for (int d = 0; d < dice.length; d++) {
+            if (!kept[d])
+                dice[d].reroll();
         }
         roll++;
     }
 
-    public int[] getDice() {
-        int[] ds = new int[dice.size()];
-        for (int i = 0; i < dice.size(); i++) {
-            ds[i] = dice.get(i).getNumber();
-        }
-        return ds;
+    public Die[] getDice() {
+        return dice;
     }
 
-    public int[] getKept() {
-        int[] ds = new int[kept.size()];
-        for (int i = 0; i < kept.size(); i++) {
-            ds[i] = kept.get(i).getNumber();
-        }
-        return ds;
-    }
-
-    public void keepAll() {
-        for (Die d : dice) {
-            kept.add(d);
-        }
-        dice.removeAll(kept);
-        roll = 1; // for next time
+    public boolean[] getKept() {
+        return kept;
     }
 
     @Override
@@ -85,8 +58,20 @@ public class Player {
         sb.append(name + "\n");
         sb.append("Already scored: " + scored + "\n");
         sb.append("Total: " + score + "\n");
-        sb.append("Dice: " + dice.toString() + " - Kept: " + kept.toString());
+        sb.append("Dice: " + new ArrayList<Die>(Arrays.asList(dice)) + "\nKept: " + keptToString());
         return sb.toString();
+    }
+
+    private String keptToString() {
+        String s = " ";
+        for (int i = 0; i < 5; i++) {
+            if (kept[i]) {
+                s += "K  ";
+            } else {
+                s += "-  ";
+            }
+        }
+        return s;
     }
 
     public int score(String categoryName) {
@@ -97,8 +82,12 @@ public class Player {
         if (ss == null)
             return -2;
 
+        roll = 1;
+        for (int d = 0; d < kept.length; d++)
+            kept[d] = false;
+
         scored.add(categoryName);
-        int s = ss.calculate(kept);
+        int s = ss.calculate(new ArrayList<Die>(Arrays.asList(dice)));
         score += s;
         return s;
     }

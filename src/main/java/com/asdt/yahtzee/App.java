@@ -13,7 +13,7 @@ public class App {
 
         UI ui = new UI(game);
 
-        ui.round();
-        ui.round();
+        for (int i = 0; i < 13; i++)
+            ui.round();
     }
 }

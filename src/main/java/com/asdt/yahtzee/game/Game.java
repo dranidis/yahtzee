@@ -25,20 +25,11 @@ public class Game {
         if (called != currentPlayer) {
             throw new RuntimeException(playerName + " Not your turn");
         }
-        called.rollKeeping(keep);
-    }
-
-    /**
-     * Decide to finish your turn (before final roll) by keeping all dice.
-     *
-     * @param playerName Player calling
-     */
-    public void keepAll(String playerName) {
-        Player called = players.get(playerName);
-        if (called != currentPlayer) {
-            throw new RuntimeException("Not your turn");
+        boolean[] kept = new boolean[5];
+        for (int i = 0; i < keep.length; i++) {
+            kept[keep[i] - 1] = true;
         }
-        called.keepAll();
+        called.rollKeeping(kept);
     }
 
     /**
@@ -57,10 +48,15 @@ public class Game {
     }
 
     public int[] getDice() {
-        return currentPlayer.getDice();
+        Die[] dice = currentPlayer.getDice();
+        int diceNum[] = new int[5];
+        for (int i = 0; i < 5; i++) {
+            diceNum[i] = dice[i].getNumber();
+        }
+        return diceNum;
     }
 
-    public int[] getKept() {
+    public boolean[] getKept() {
         return currentPlayer.getKept();
     }
 
@@ -91,7 +87,7 @@ public class Game {
         return currentPlayer.getName();
     }
 
-	public int getScore(String name) {
-		return players.get(name).getScore();
-	}
+    public int getPlayerScore(String name) {
+        return players.get(name).getScore();
+    }
 }

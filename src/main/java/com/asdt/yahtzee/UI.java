@@ -35,7 +35,7 @@ public class UI {
         System.out.println(game);
 
         for (int r = 0; r < 2; r++) {
-            System.out.println(name + " Pick dice to keep: (0) to end choice, (-1) to keep all");
+            System.out.println(name + " Write numbers of dice to keep with a 0 at the end, (-1) to keep all");
             List<Integer> list = new ArrayList<>();
             int keep;
             do {
@@ -45,7 +45,7 @@ public class UI {
                 }
             } while (keep > 0);
             if (keep == -1) {
-                game.keepAll(name);
+                // game.keepAll(name);
                 System.out.println(game);
                 break;
             }
@@ -62,7 +62,7 @@ public class UI {
             score = game.scoreACategory(name, categoryName);
         }
         System.out.println("Score: " + score);
-        System.out.println("Total Score: " + game.getScore(name));
+        System.out.println("Total Score: " + game.getPlayerScore(name));
     }
 
 }
