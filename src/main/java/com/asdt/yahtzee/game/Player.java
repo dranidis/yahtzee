@@ -49,7 +49,7 @@ public class Player {
     }
 
     // for testing
-    void setDice(Die[] dice) {
+    public void setDice(Die[] dice) {
         this.dice = dice;
     }
 
@@ -94,8 +94,8 @@ public class Player {
                 ifNullSpace(scored.get("5k"))));
         sb.append(String.format("    Sect. Bonus  %s      Chance      (ch)  %s\n", ifNullSpace(scored.get("UB")),
                 ifNullSpace(scored.get("ch"))));
-        sb.append(String.format("    Sect. Total  %s      Yahtzee Bonus     %s       TOTAL   %s\n", ifNullSpace(upperScore),
-                ifNullSpace(scored.get("YB")), ifNullSpace(totalScore)));
+        sb.append(String.format("    Sect. Total  %s      Yahtzee Bonus     %s       TOTAL   %s\n",
+                ifNullSpace(upperScore), ifNullSpace(scored.get("YB")), ifNullSpace(totalScore)));
         return sb.toString();
     }
 
@@ -119,6 +119,27 @@ public class Player {
     }
 
     public int score(String categoryName) {
+        int scoreForCategory = getScoreForCategory(categoryName);
+        if (scoreForCategory < 0) {
+            return scoreForCategory;
+        }
+        // update sheet
+        if (isYahtzee()) {
+            SumNullBuilder sb = new SumNullBuilder();
+            sb.add(scored.get("YB")).add(100);
+            scored.put("YB", sb.getSum());
+        }
+
+        scored.put(categoryName, scoreForCategory);
+
+        roll = 1;
+        for (int d = 0; d < kept.length; d++)
+            kept[d] = false;
+
+        return scoreForCategory;
+    }
+
+    public int getScoreForCategory(String categoryName) {
         // already scored category
         if (scored.get(categoryName) != null)
             return -1;
@@ -142,20 +163,10 @@ public class Player {
             if (!categoryName.equals(catUpperSection) && scored.get(catUpperSection) == null) {
                 return -5;
             }
-
-            SumNullBuilder sb = new SumNullBuilder();
-            sb.add(scored.get("YB")).add(100);
-            scored.put("YB", sb.getSum());
             isJoker = true;
         }
 
         int s = ss.calculate(new ArrayList<Die>(Arrays.asList(dice)), isJoker);
-        scored.put(categoryName, s);
-
-        roll = 1;
-        for (int d = 0; d < kept.length; d++)
-            kept[d] = false;
-
         return s;
     }
 
