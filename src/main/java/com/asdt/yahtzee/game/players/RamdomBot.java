@@ -10,6 +10,10 @@ import com.asdt.yahtzee.game.Game;
 import com.asdt.yahtzee.game.Player;
 import com.asdt.yahtzee.game.score.ScoreFactory;
 
+/**
+ * RandomBot chooses randomly which dices to keep for every roll
+ * It chooses a random available category for scoring.
+ */
 public class RamdomBot implements GamePlayer {
     Random r;
     private Player player;

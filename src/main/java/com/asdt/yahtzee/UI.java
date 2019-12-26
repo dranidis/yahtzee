@@ -28,7 +28,10 @@ public class UI {
         }
 
         System.out.println("\nFINAL RESULTS\n");
-        System.out.println(game);
+
+        for(String player: gamePlayers.keySet()) {
+            System.out.println(player + " score: " + game.getPlayerScore(player));
+        }
         s.close();
     }
 
