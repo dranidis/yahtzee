@@ -15,10 +15,10 @@ public class Game {
     private ArrayList<Player> roundPlayers;
 
     /**
-     * Roll the dice. Optionally write which dice to keep from previous roll.
+     * Roll the dice. Optionally, provide any dice index to keep from previous roll.
      *
      * @param playerName Player calling
-     * @param keep       vararg which dice to keep
+     * @param keep       vararg which dice indices to keep
      */
     public void rollKeeping(String playerName, int... keep) {
         Player called = players.get(playerName);
@@ -100,4 +100,8 @@ public class Game {
     public int getPlayerScore(String name) {
         return players.get(name).getScore();
     }
+
+	public Player getPlayer(String name) {
+		return players.get(name);
+	}
 }

@@ -58,6 +58,10 @@ public class Player {
         this.scored = scored;
     }
 
+    public Map<String, Integer> getScored() {
+        return scored;
+    }
+
     public boolean[] getKept() {
         return kept;
     }
@@ -76,26 +80,26 @@ public class Player {
         int totalScore = getScore();
         // "1s", "2s","3s","4s","5s","6s","UB", "3k","4k","fh","s4","s5","5k","ch", "YB"
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("    Aces   (1s)  %s      3 of a Kind (3k)  %s\n", ifNull(scored.get("1s")),
-                ifNull(scored.get("3k"))));
-        sb.append(String.format("    Twos   (2s)  %s      4 of a Kind (4k)  %s\n", ifNull(scored.get("2s")),
-                ifNull(scored.get("4k"))));
-        sb.append(String.format("    Threes (3s)  %s      Full House  (fh)  %s\n", ifNull(scored.get("3s")),
-                ifNull(scored.get("fh"))));
-        sb.append(String.format("    Fours  (4s)  %s      S. Straight (s4)  %s\n", ifNull(scored.get("4s")),
-                ifNull(scored.get("s4"))));
-        sb.append(String.format("    Fives  (5s)  %s      L. Straight (s5)  %s\n", ifNull(scored.get("5s")),
-                ifNull(scored.get("s5"))));
-        sb.append(String.format("    Sixes  (6s)  %s      Yahtzee     (5k)  %s\n", ifNull(scored.get("6s")),
-                ifNull(scored.get("5k"))));
-        sb.append(String.format("    Sect. Bonus  %s      Chance      (ch)  %s\n", ifNull(scored.get("UB")),
-                ifNull(scored.get("ch"))));
-        sb.append(String.format("    Sect. Total  %s      Yahtzee Bonus     %s       TOTAL   %s\n", ifNull(upperScore),
-                ifNull(scored.get("YB")), ifNull(totalScore)));
+        sb.append(String.format("    Aces   (1s)  %s      3 of a Kind (3k)  %s\n", ifNullSpace(scored.get("1s")),
+                ifNullSpace(scored.get("3k"))));
+        sb.append(String.format("    Twos   (2s)  %s      4 of a Kind (4k)  %s\n", ifNullSpace(scored.get("2s")),
+                ifNullSpace(scored.get("4k"))));
+        sb.append(String.format("    Threes (3s)  %s      Full House  (fh)  %s\n", ifNullSpace(scored.get("3s")),
+                ifNullSpace(scored.get("fh"))));
+        sb.append(String.format("    Fours  (4s)  %s      S. Straight (s4)  %s\n", ifNullSpace(scored.get("4s")),
+                ifNullSpace(scored.get("s4"))));
+        sb.append(String.format("    Fives  (5s)  %s      L. Straight (s5)  %s\n", ifNullSpace(scored.get("5s")),
+                ifNullSpace(scored.get("s5"))));
+        sb.append(String.format("    Sixes  (6s)  %s      Yahtzee     (5k)  %s\n", ifNullSpace(scored.get("6s")),
+                ifNullSpace(scored.get("5k"))));
+        sb.append(String.format("    Sect. Bonus  %s      Chance      (ch)  %s\n", ifNullSpace(scored.get("UB")),
+                ifNullSpace(scored.get("ch"))));
+        sb.append(String.format("    Sect. Total  %s      Yahtzee Bonus     %s       TOTAL   %s\n", ifNullSpace(upperScore),
+                ifNullSpace(scored.get("YB")), ifNullSpace(totalScore)));
         return sb.toString();
     }
 
-    private String ifNull(Integer i) {
+    private String ifNullSpace(Integer i) {
         if (i == null)
             return "   ";
         else
@@ -125,8 +129,10 @@ public class Player {
 
         ScoreStrategy ss = ScoreFactory.getInstance().getScoreStrategy(categoryName);
         // unimplemented strategy, invalid category name
-        if (ss == null)
+        if (ss == null) {
+            System.err.println("Not implemented strategy: " + categoryName);
             return -2;
+        }
 
         boolean isJoker = false;
 

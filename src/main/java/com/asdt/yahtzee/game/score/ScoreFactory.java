@@ -3,8 +3,10 @@ package com.asdt.yahtzee.game.score;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ScoreFactory {
 
@@ -48,4 +50,8 @@ public class ScoreFactory {
 		return scoringSheet;
 	}
 
+    public Set<String> getCategories() {
+        // clone the keys so that original Map is not changed!
+        return  new HashSet<>(scoreStrategies.keySet());
+    }
 }

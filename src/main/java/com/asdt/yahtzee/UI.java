@@ -1,18 +1,24 @@
 package com.asdt.yahtzee;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import com.asdt.yahtzee.game.Game;
+import com.asdt.yahtzee.game.players.ConsolePlayer;
+import com.asdt.yahtzee.game.players.GamePlayer;
+import com.asdt.yahtzee.game.players.RamdomBot;
 
 public class UI {
     Game game;
     Scanner s;
+    private Map<String, GamePlayer> gamePlayers;
 
     public UI(Game game) {
         this.game = game;
         s = new Scanner(System.in);
+
+        gamePlayers = new HashMap<>();
 
         readPlayers();
 
@@ -27,13 +33,19 @@ public class UI {
     }
 
     private void readPlayers() {
-        System.out.println("Enter player names or '--' to end");
+        System.out.println("Enter player names or '--' to end. Name starting with 'r' are names for random bots.");
 
         String name = "";
         while (!name.equals("--")) {
             name = s.next();
             if (!name.equals("--")) {
-                game.addPlayer(name);
+                if (name.startsWith("r")) {
+                    game.addPlayer(name);
+                    gamePlayers.put(name, new RamdomBot(game, name));
+                } else {
+                    game.addPlayer(name);
+                    gamePlayers.put(name, new ConsolePlayer());
+                }
             }
         }
     }
@@ -56,28 +68,16 @@ public class UI {
 
         for (int r = 0; r < 2; r++) {
             System.out.println(name + " Write numbers of dice to keep with a 0 at the end, (-1) to keep all");
-            List<Integer> list = new ArrayList<>();
-            int keep = 7;
-            do {
-                if (s.hasNextInt()) {
-                    keep = s.nextInt();
 
-                    if (keep > 0) {
-                        if (keep <= 6)
-                            list.add(keep);
-                        else
-                            System.out.println("1 to 6!");
-                    }
-                } else {
-                    s.next();
-                    System.out.println("1 to 6!");
-                }
-            } while (keep != 0 && keep != -1);
-            if (keep == -1) {
+            // interact with the player
+            int[] array = gamePlayers.get(name).rollKeeping();
+
+            if (array.length == 0 || array[0] == -1) {
+                System.out.println("Keeping all");
                 System.out.println(game);
                 break;
             }
-            int[] array = list.stream().mapToInt(i -> i).toArray();
+
             if (r == 0)
                 System.out.println("**** 2nd ROLL ****");
             else
@@ -86,13 +86,21 @@ public class UI {
             System.out.println(game);
         }
         System.out.println("Enter an available scoring category xx: ");
-        String categoryName = s.next();
+
+        // interact with the player
+        String categoryName = gamePlayers.get(name).selectCategory();
+
         int score = game.scoreACategory(name, categoryName);
         while (score < 0) {
-            System.out.println("Invalid choice!");
-            categoryName = s.next();
+            System.out.println("Invalid choice! " + "(score=" + score +")");
+
+            // interact with the player
+            categoryName = gamePlayers.get(name).selectCategory();
+
             score = game.scoreACategory(name, categoryName);
         }
+        System.out.println("###### ROUND SCORING ######");
+        System.out.println(game);
     }
 
 }
