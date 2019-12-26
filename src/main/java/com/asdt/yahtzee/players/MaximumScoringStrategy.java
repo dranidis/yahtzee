@@ -27,6 +27,9 @@ public class MaximumScoringStrategy implements ScoringStrategy {
         // if score is 0 select categories according to difficulty
         // choose the easiest of the hardest or the one giving the less reward?
         //
+        // is two categories are possible and one is harder prefer the harder
+        //
+        //
         int chanceScore = player.getScoreForCategory("ch");
         if (chanceScore > maxScore) {
             maxCategory = "ch";
