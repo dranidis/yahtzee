@@ -81,12 +81,12 @@ public class UI {
         System.out.println(game);
 
         for (int r = 0; r < 2; r++) {
-            System.out.println(name + " Write numbers of dice to keep with a 0 at the end, (-1) to keep all");
+            System.out.println(name + " Write indices (1-5) of dice to keep with a 0 at the end, (-1) to keep all");
 
             // interact with the player
             int[] array = gamePlayers.get(name).rollKeeping();
 
-            if (array.length == 0 || array[0] == -1) {
+            if (array.length == 5 || (array.length == 1 && array[0] == -1)) {
                 System.out.println("Keeping all");
                 System.out.println(game);
                 break;
