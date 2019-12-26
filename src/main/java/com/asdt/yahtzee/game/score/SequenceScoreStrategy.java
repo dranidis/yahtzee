@@ -13,7 +13,7 @@ public class SequenceScoreStrategy implements ScoreStrategy {
     }
 
     @Override
-    public int calculate(List<Die> kept) {
+    public int calculate(List<Die> kept, boolean isJoker) {
         kept.sort(Comparator.comparing(Die::getNumber));
         int countSeq = 1;
         for (int i = 0; i < kept.size() - 1; i++) {

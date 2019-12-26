@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.asdt.yahtzee.game.score.ScoreFactory;
 import com.asdt.yahtzee.game.score.ScoreStrategy;
-import com.asdt.yahtzee.game.util.SumBuilder;
+import com.asdt.yahtzee.game.util.SumNullBuilder;
 
 public class Player {
 
@@ -15,7 +15,6 @@ public class Player {
     private boolean[] kept = new boolean[5];
     private int roll = 1;
     Map<String, Integer> scored;
-    private int score = 0;
 
     public Player(String name) {
         this.name = name;
@@ -49,6 +48,16 @@ public class Player {
         return dice;
     }
 
+    // for testing
+    void setDice(Die[] dice) {
+        this.dice = dice;
+    }
+
+    // for testing
+    void setScored(Map<String, Integer> scored) {
+        this.scored = scored;
+    }
+
     public boolean[] getKept() {
         return kept;
     }
@@ -57,10 +66,40 @@ public class Player {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(name + "\n");
-        sb.append("Already scored: " + scored + "\n");
-        sb.append("Total: " + score + "\n");
-        sb.append("Dice: " + new ArrayList<Die>(Arrays.asList(dice)) + "\nKept: " + keptToString());
+        sb.append(getScoreSheet());
+        sb.append("\nDice: " + new ArrayList<Die>(Arrays.asList(dice)) + "\nKept: " + keptToString());
         return sb.toString();
+    }
+
+    private String getScoreSheet() {
+        int upperScore = getUSScore();
+        int totalScore = getScore();
+        // "1s", "2s","3s","4s","5s","6s","UB", "3k","4k","fh","s4","s5","5k","ch", "YB"
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("    Aces   (1s)  %s      3 of a Kind (3k)  %s\n", ifNull(scored.get("1s")),
+                ifNull(scored.get("3k"))));
+        sb.append(String.format("    Twos   (2s)  %s      4 of a Kind (4k)  %s\n", ifNull(scored.get("2s")),
+                ifNull(scored.get("4k"))));
+        sb.append(String.format("    Threes (3s)  %s      Full House  (fh)  %s\n", ifNull(scored.get("3s")),
+                ifNull(scored.get("fh"))));
+        sb.append(String.format("    Fours  (4s)  %s      S. Straight (s4)  %s\n", ifNull(scored.get("4s")),
+                ifNull(scored.get("s4"))));
+        sb.append(String.format("    Fives  (5s)  %s      L. Straight (s5)  %s\n", ifNull(scored.get("5s")),
+                ifNull(scored.get("s5"))));
+        sb.append(String.format("    Sixes  (6s)  %s      Yahtzee     (5k)  %s\n", ifNull(scored.get("6s")),
+                ifNull(scored.get("5k"))));
+        sb.append(String.format("    Sect. Bonus  %s      Chance      (ch)  %s\n", ifNull(scored.get("UB")),
+                ifNull(scored.get("ch"))));
+        sb.append(String.format("    Sect. Total  %s      Yahtzee Bonus     %s       TOTAL   %s\n", ifNull(upperScore),
+                ifNull(scored.get("YB")), ifNull(totalScore)));
+        return sb.toString();
+    }
+
+    private String ifNull(Integer i) {
+        if (i == null)
+            return "   ";
+        else
+            return String.format("%3d", i);
     }
 
     private String keptToString() {
@@ -89,19 +128,48 @@ public class Player {
         if (ss == null)
             return -2;
 
+        boolean isJoker = false;
+
+        if (isYahtzee()) {
+            int num = dice[0].getNumber();
+            String catUpperSection = "" + num + "s";
+            if (!categoryName.equals(catUpperSection) && scored.get(catUpperSection) == null) {
+                return -5;
+            }
+
+            SumNullBuilder sb = new SumNullBuilder();
+            sb.add(scored.get("YB")).add(100);
+            scored.put("YB", sb.getSum());
+            isJoker = true;
+        }
+
+        int s = ss.calculate(new ArrayList<Die>(Arrays.asList(dice)), isJoker);
+        scored.put(categoryName, s);
+
         roll = 1;
         for (int d = 0; d < kept.length; d++)
             kept[d] = false;
 
-        int s = ss.calculate(new ArrayList<Die>(Arrays.asList(dice)));
-        scored.put(categoryName, s);
         return s;
     }
 
-    public int getScore() {
-        SumBuilder sb = new SumBuilder();
+    private boolean isYahtzee() {
+        return scored.get("5k") != null && dice[0].getNumber() == dice[1].getNumber()
+                && dice[1].getNumber() == dice[2].getNumber() && dice[2].getNumber() == dice[3].getNumber()
+                && dice[3].getNumber() == dice[4].getNumber();
+    }
+
+    private int getUSScore() {
+        SumNullBuilder sb = new SumNullBuilder();
         sb.add(scored.get("1s")).add(scored.get("2s")).add(scored.get("3s")).add(scored.get("4s")).add(scored.get("5s"))
                 .add(scored.get("6s"));
+
+        return sb.getSum();
+    }
+
+    public int getScore() {
+        SumNullBuilder sb = new SumNullBuilder();
+        sb.add(getUSScore());
 
         if (sb.getSum() >= 63) {
             scored.put("UB", 35);
@@ -109,8 +177,9 @@ public class Player {
         }
 
         sb.add(scored.get("3k")).add(scored.get("4k")).add(scored.get("s4")).add(scored.get("s5")).add(scored.get("fh"))
-                .add(scored.get("5k")).add(scored.get("ch"));
+                .add(scored.get("5k")).add(scored.get("ch")).add(scored.get("YB"));
 
         return sb.getSum();
     }
+
 }

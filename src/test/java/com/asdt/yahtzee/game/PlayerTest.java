@@ -1,7 +1,9 @@
 package com.asdt.yahtzee.game;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doCallRealMethod;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
@@ -67,5 +69,77 @@ public class PlayerTest {
         Mockito.when(scored.get("ch")).thenReturn(10);
 
         assertEquals("Total ", 62 + 185, p.getScore());
+    }
+
+    @Test
+    public void yahtzeeBonus() {
+        Map<String, Integer> mockScored = new HashMap<>();
+        mockScored.put("1s", 2);
+        mockScored.put("2s", 6);
+        mockScored.put("3s", 9);
+        mockScored.put("4s", 12);
+        mockScored.put("5s", 15);
+        mockScored.put("6s", 18);
+        mockScored.put("s4", 30);
+        mockScored.put("s5", 40);
+        mockScored.put("5k", 50);
+        mockScored.put("ch", 10);
+
+        Player p = new Player("p");
+        p.setScored(mockScored);
+        p.setDice(new Die[] {new Die(2), new Die(2), new Die(2), new Die(2), new Die(2)});
+
+        assertEquals("score fh as joker", 25, p.score("fh"));
+        assertEquals("bonus yahtzee", 100, p.scored.get("YB").intValue());
+        assertEquals("Total ", 62 + 130 + 100 + 25, p.getScore());
+    }
+
+    @Test
+    public void yahtzeeBonusOnlyInUpper() {
+        Map<String, Integer> mockScored = new HashMap<>();
+        mockScored.put("1s", 2);
+
+        mockScored.put("3s", 9);
+        mockScored.put("4s", 12);
+        mockScored.put("5s", 15);
+        mockScored.put("6s", 18);
+        mockScored.put("s4", 30);
+        mockScored.put("s5", 40);
+        mockScored.put("5k", 50);
+        mockScored.put("ch", 10);
+
+        Player p = new Player("p");
+        p.setScored(mockScored);
+        p.setDice(new Die[] {new Die(2), new Die(2), new Die(2), new Die(2), new Die(2)});
+
+        assertEquals("score fh as joker not possible", -5, p.score("fh"));
+
+        assertEquals("score 2s as joker is possible", 10, p.score("2s"));
+        assertEquals("bonus yahtzee", 100, p.scored.get("YB").intValue());
+        assertEquals("Total (bonus)", 56 + 130 + 100 + 10 + 35, p.getScore());
+    }
+
+    @Test
+    public void secondYahtzeeBonus() {
+        Map<String, Integer> mockScored = new HashMap<>();
+        mockScored.put("1s", 2);
+
+        mockScored.put("3s", 9);
+        mockScored.put("4s", 12);
+        mockScored.put("5s", 15);
+        mockScored.put("6s", 18);
+        mockScored.put("s4", 30);
+        mockScored.put("s5", 40);
+        mockScored.put("5k", 50);
+        mockScored.put("ch", 10);
+
+        Player p = new Player("p");
+        p.setScored(mockScored);
+        p.setDice(new Die[] {new Die(2), new Die(2), new Die(2), new Die(2), new Die(2)});
+
+        assertEquals("score 2s as joker is possible", 10, p.score("2s"));
+        assertEquals("score fh as joker is possible", 25, p.score("fh"));
+        assertEquals("bonus yahtzee", 200, p.scored.get("YB").intValue());
+        assertEquals("Total 56+10 upper plus 35 bonus, 130+25 plus 200 YBonus", 56 + 130 + 200 + 10 + 35 + 25, p.getScore());
     }
 }

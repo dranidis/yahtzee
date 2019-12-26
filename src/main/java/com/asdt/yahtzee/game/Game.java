@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 public class Game {
 
     private int currentPlayerIndex = 0;
     private Player currentPlayer;
     private Map<String, Player> players = new HashMap<>();
     private ArrayList<Player> roundPlayers;
-
-    public Game() {
-    }
 
     /**
      * Roll the dice. Optionally write which dice to keep from previous roll.
@@ -58,6 +58,16 @@ public class Game {
 
     public boolean[] getKept() {
         return currentPlayer.getKept();
+    }
+
+    public JsonObject toJson() {
+        Gson gson = new Gson();
+        String json = gson.toJson(currentPlayer);
+        // System.out.println(json);
+        JsonObject jsonObject = gson.fromJson(json, JsonObject.class); // parse
+        jsonObject.addProperty("score", currentPlayer.getScore()); // modify
+        // return currentPlayer.toString();
+        return jsonObject;
     }
 
     @Override

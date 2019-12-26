@@ -12,7 +12,7 @@ public class NumberScoreStrategy implements ScoreStrategy {
 	}
 
 	@Override
-    public int calculate(List<Die> kept) {
+    public int calculate(List<Die> kept, boolean isJoker) {
         int total = 0;
         for(Die d: kept) {
             if (d.getNumber() == number) {

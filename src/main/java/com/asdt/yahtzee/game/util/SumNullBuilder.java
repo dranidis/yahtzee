@@ -1,8 +1,8 @@
 package com.asdt.yahtzee.game.util;
 
-public class SumBuilder {
+public class SumNullBuilder {
     int sum = 0;
-    public SumBuilder add(Integer i) {
+    public SumNullBuilder add(Integer i) {
         if (i != null) {
             sum += i.intValue();
         }

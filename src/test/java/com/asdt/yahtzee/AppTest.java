@@ -139,9 +139,7 @@ public class AppTest {
         int score = game.scoreACategory("p1", "1s");
         assertTrue("Category 1 not used by p1 positive score", score >= 0);
 
-        System.out.println(game.getCurrentPlayersName());
         game.getNextPlayer();
-        System.out.println(game.getCurrentPlayersName());
 
         game.rollKeeping("p2");
         score = game.scoreACategory("p2", "1s");
