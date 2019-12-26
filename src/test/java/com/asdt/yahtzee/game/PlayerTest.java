@@ -1,7 +1,6 @@
 package com.asdt.yahtzee.game;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doCallRealMethod;
 
 import java.util.HashMap;
 import java.util.Map;
