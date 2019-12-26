@@ -1,4 +1,4 @@
-package com.asdt.yahtzee.game.players;
+package com.asdt.yahtzee.players;
 
 import java.util.ArrayList;
 import java.util.List;

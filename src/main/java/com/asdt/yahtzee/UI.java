@@ -5,9 +5,11 @@ import java.util.Map;
 import java.util.Scanner;
 
 import com.asdt.yahtzee.game.Game;
-import com.asdt.yahtzee.game.players.ConsolePlayer;
-import com.asdt.yahtzee.game.players.GamePlayer;
-import com.asdt.yahtzee.game.players.RamdomBot;
+import com.asdt.yahtzee.players.Bot;
+import com.asdt.yahtzee.players.ConsolePlayer;
+import com.asdt.yahtzee.players.GamePlayer;
+import com.asdt.yahtzee.players.RandomKeepingStrategy;
+import com.asdt.yahtzee.players.RandomScoringStrategy;
 
 public class UI {
     Game game;
@@ -29,7 +31,7 @@ public class UI {
 
         System.out.println("\nFINAL RESULTS\n");
 
-        for(String player: gamePlayers.keySet()) {
+        for (String player : gamePlayers.keySet()) {
             System.out.println(player + " score: " + game.getPlayerScore(player));
         }
         s.close();
@@ -44,7 +46,8 @@ public class UI {
             if (!name.equals("--")) {
                 if (name.startsWith("r")) {
                     game.addPlayer(name);
-                    gamePlayers.put(name, new RamdomBot(game, name));
+                    gamePlayers.put(name,
+                            new Bot(game, name, new RandomKeepingStrategy(), new RandomScoringStrategy()));
                 } else {
                     game.addPlayer(name);
                     gamePlayers.put(name, new ConsolePlayer());
@@ -95,7 +98,7 @@ public class UI {
 
         int score = game.scoreACategory(name, categoryName);
         while (score < 0) {
-            System.out.println("Invalid choice! " + "(score=" + score +")");
+            System.out.println("Invalid choice! " + "(score=" + score + ")");
 
             // interact with the player
             categoryName = gamePlayers.get(name).selectCategory();
