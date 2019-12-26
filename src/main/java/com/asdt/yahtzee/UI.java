@@ -12,9 +12,30 @@ public class UI {
 
     public UI(Game game) {
         this.game = game;
-        game.addPlayer("Dimitris");
-        // game.addPlayer("Andreas");
         s = new Scanner(System.in);
+
+        readPlayers();
+
+        for (int i = 0; i < 13; i++) {
+            System.out.println("\n-----ROUND " + (i + 1) + "------");
+            round();
+        }
+
+        System.out.println("\nFINAL RESULTS\n");
+        System.out.println(game);
+        s.close();
+    }
+
+    private void readPlayers() {
+        System.out.println("Enter player names or '--' to end");
+
+        String name = "";
+        while (!name.equals("--")) {
+            name = s.next();
+            if (!name.equals("--")) {
+                game.addPlayer(name);
+            }
+        }
     }
 
     public void round() {
@@ -24,36 +45,47 @@ public class UI {
             play(player);
             player = game.getNextPlayer();
         }
-        // s.close();
     }
 
     public void play(String name) {
-
+        System.out.println("\n" + name + "'s turn\n");
+        System.out.println("**** 1st ROLL ****");
         game.rollKeeping(name);
 
-        System.out.println(name + "'s turn");
         System.out.println(game);
 
         for (int r = 0; r < 2; r++) {
             System.out.println(name + " Write numbers of dice to keep with a 0 at the end, (-1) to keep all");
             List<Integer> list = new ArrayList<>();
-            int keep;
+            int keep = 7;
             do {
-                keep = s.nextInt();
-                if (keep > 0) {
-                    list.add(keep);
+                if (s.hasNextInt()) {
+                    keep = s.nextInt();
+
+                    if (keep > 0) {
+                        if (keep <= 6)
+                            list.add(keep);
+                        else
+                            System.out.println("1 to 6!");
+                    }
+                } else {
+                    s.next();
+                    System.out.println("1 to 6!");
                 }
-            } while (keep > 0);
+            } while (keep != 0 && keep != -1);
             if (keep == -1) {
-                // game.keepAll(name);
                 System.out.println(game);
                 break;
             }
             int[] array = list.stream().mapToInt(i -> i).toArray();
+            if (r == 0)
+                System.out.println("**** 2nd ROLL ****");
+            else
+                System.out.println("**** 3rd ROLL ****");
             game.rollKeeping(name, array);
             System.out.println(game);
         }
-        System.out.println("Enter a scoring category: ");
+        System.out.println("Enter an available scoring category xx: ");
         String categoryName = s.next();
         int score = game.scoreACategory(name, categoryName);
         while (score < 0) {
@@ -61,8 +93,6 @@ public class UI {
             categoryName = s.next();
             score = game.scoreACategory(name, categoryName);
         }
-        System.out.println("Score: " + score);
-        System.out.println("Total Score: " + game.getPlayerScore(name));
     }
 
 }

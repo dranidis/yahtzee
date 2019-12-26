@@ -7,7 +7,10 @@ import com.asdt.yahtzee.game.Die;
 public class FullHouseScoreStrategy implements ScoreStrategy {
 
     @Override
-    public int calculate(List<Die> kept) {
+    public int calculate(List<Die> kept, boolean isJoker) {
+        if (isJoker)
+            return 25;
+
         int first = kept.get(0).getNumber();
         int second = 0;
         int countFirst = 0;

@@ -14,7 +14,7 @@ public class OfaKindScoreStrategy implements ScoreStrategy {
     }
 
     @Override
-    public int calculate(List<Die> kept) {
+    public int calculate(List<Die> kept, boolean isJoker) {
         Map<Integer, Integer> counts = new HashMap<>();
         for (Die d : kept) {
             int num = d.getNumber();
