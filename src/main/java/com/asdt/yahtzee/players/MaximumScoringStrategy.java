@@ -1,35 +1,41 @@
 package com.asdt.yahtzee.players;
 
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import com.asdt.yahtzee.game.Player;
 import com.asdt.yahtzee.game.score.ScoreFactory;
 
 public class MaximumScoringStrategy implements ScoringStrategy {
-    private Random r = new Random();
 
     @Override
     public String selectCategory(Player player) {
-        String randomCategory = "";
-        Set<String> cat = ScoreFactory.getInstance().getCategories();
-        Map<String, Integer> alreadyScored = player.getScored();
-        for (String as : alreadyScored.keySet()) {
-            if (alreadyScored.get(as) != null)
-                cat.remove(as);
-        }
-        int size = cat.size();
-        int index = r.nextInt(size);
-        int i = 0;
-        for (String c : cat) {
-            if (i == index) {
-                randomCategory = c;
-                break;
+
+        Set<String> categories = ScoreFactory.getInstance().getCategories();
+        categories.remove("ch");
+
+        int maxScore = -1;
+        String maxCategory = "";
+        for(String category: categories) {
+            int score = player.getScoreForCategory(category);
+            if (score > maxScore) {
+                maxScore = score;
+                maxCategory = category;
             }
-            i++;
         }
-        System.out.println(this.getClass().toString() + "  chooses category: " + randomCategory);
-        return randomCategory;
+
+        // todo:
+        // if score is 0 select categories according to difficulty
+        // choose the easiest of the hardest or the one giving the less reward?
+        //
+        int chanceScore = player.getScoreForCategory("ch");
+        if (chanceScore > maxScore) {
+            maxCategory = "ch";
+        }
+
+        if (maxCategory.equals("")) {
+            throw new RuntimeException(this.getClass().toString() + " maxCategory empty");
+        }
+        System.out.println(this.getClass().toString() + "  chooses category: " + maxCategory);
+        return maxCategory;
     }
 }

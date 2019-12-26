@@ -8,6 +8,7 @@ import com.asdt.yahtzee.game.Game;
 import com.asdt.yahtzee.players.Bot;
 import com.asdt.yahtzee.players.ConsolePlayer;
 import com.asdt.yahtzee.players.GamePlayer;
+import com.asdt.yahtzee.players.MaximumScoringStrategy;
 import com.asdt.yahtzee.players.RandomKeepingStrategy;
 import com.asdt.yahtzee.players.RandomScoringStrategy;
 
@@ -38,7 +39,10 @@ public class UI {
     }
 
     private void readPlayers() {
-        System.out.println("Enter player names or '--' to end. Name starting with 'r' are names for random bots.");
+        System.out.println("Enter player names or '--' to end. \n" +
+        "Names starting with 'r' are names for random bots.\n"+
+        "Names starting with 'm' are names for maximizing bots.\n"
+        );
 
         String name = "";
         while (!name.equals("--")) {
@@ -48,6 +52,10 @@ public class UI {
                     game.addPlayer(name);
                     gamePlayers.put(name,
                             new Bot(game, name, new RandomKeepingStrategy(), new RandomScoringStrategy()));
+                } else if (name.startsWith("m")) {
+                    game.addPlayer(name);
+                    gamePlayers.put(name,
+                            new Bot(game, name, new RandomKeepingStrategy(), new MaximumScoringStrategy()));
                 } else {
                     game.addPlayer(name);
                     gamePlayers.put(name, new ConsolePlayer());
