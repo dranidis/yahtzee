@@ -1,5 +1,7 @@
 package com.asdt.yahtzee.players;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import com.asdt.yahtzee.game.Player;
@@ -10,13 +12,18 @@ public class MaximumScoringStrategy implements ScoringStrategy {
     @Override
     public String selectCategory(Player player) {
 
-        Set<String> categories = ScoreFactory.getInstance().getCategories();
-        categories.remove("ch");
+        double sum = getSumOfUnusedCategories(player);
+        // categories.remove("ch");
 
-        int maxScore = -1;
+        double maxScore = -1;
         String maxCategory = "";
-        for(String category: categories) {
-            int score = player.getScoreForCategory(category);
+        for (String category : categories) {
+            if (player.getScored().get(category) != null)
+                continue;
+            double score = player.getScoreForCategory(category);
+            if (score < 0)
+                continue;
+            score += sum - probValues.get(category);
             if (score > maxScore) {
                 maxScore = score;
                 maxCategory = category;
@@ -30,15 +37,55 @@ public class MaximumScoringStrategy implements ScoringStrategy {
         // is two categories are possible and one is harder prefer the harder
         //
         //
-        int chanceScore = player.getScoreForCategory("ch");
-        if (chanceScore > maxScore) {
-            maxCategory = "ch";
-        }
+        // int chanceScore = player.getScoreForCategory("ch");
+        // if (chanceScore > maxScore) {
+        // maxCategory = "ch";
+        // }
 
         if (maxCategory.equals("")) {
             throw new RuntimeException(this.getClass().toString() + " maxCategory empty");
         }
-        System.out.println(this.getClass().toString() + "  chooses category: " + maxCategory);
+        // System.out.println(this.getClass().toString() + " chooses category: " +
+        // maxCategory);
         return maxCategory;
     }
+
+    private double getSumOfUnusedCategories(Player player) {
+        double sum = 0;
+        for(String category: categories) {
+            if (player.getScored().get(category) != null) {
+                sum += probValues.get(category);
+            }
+        }
+        return sum;
+    }
+
+    static Set<String> categories = ScoreFactory.getInstance().getCategories();
+    static {
+        categories.remove("UB");
+        categories.remove("YB");
+    }
+
+    static Map<String, Double> probValues;
+    static {
+        probValues = new HashMap<>();
+        probValues.put("1s", 2.1);
+        probValues.put("2s", 4.21);
+        probValues.put("3s", 6.31);
+        probValues.put("4s", 8.42);
+        probValues.put("5s", 10.53);
+        probValues.put("6s", 12.63);
+        probValues.put("3k", 15.19);
+        probValues.put("4k", 5.61);
+        probValues.put("fh", 9.15);
+        probValues.put("s4", 18.46);
+        probValues.put("s5", 10.44);
+        probValues.put("5k", 2.3);
+        probValues.put("ch", 23.33);
+    }
+
 }
+
+/*
+ * Without prob values 100000 Yahtzee! avg 113 min 30 max 303
+ */

@@ -17,7 +17,7 @@ public class RandomKeepingStrategy implements KeepingStrategy {
                 list.add(i + 1);
             }
         }
-        System.out.println(this.getClass().toString() + " keeps " + list);
+        // System.out.println(this.getClass().toString() + " keeps " + list);
         return list.stream().mapToInt(i -> i).toArray();
     }
 }

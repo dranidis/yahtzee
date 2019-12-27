@@ -29,7 +29,7 @@ public class RandomScoringStrategy implements ScoringStrategy {
             }
             i++;
         }
-        System.out.println(this.getClass().toString() + "  chooses category: " + randomCategory);
+        // System.out.println(this.getClass().toString() + "  chooses category: " + randomCategory);
         return randomCategory;
     }
 }

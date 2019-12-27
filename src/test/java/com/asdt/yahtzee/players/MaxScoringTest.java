@@ -38,7 +38,7 @@ public class MaxScoringTest {
         p.setDice(kept);
 
         MaximumScoringStrategy strategy = new MaximumScoringStrategy();
-        assertEquals("3k gives 27, ch gives 27, select 3k", "3k", strategy.selectCategory(p));
+        assertEquals("3k gives 27, ch gives 27, fh gives 25 select fh", "fh", strategy.selectCategory(p));
     }
 
     @Test
@@ -55,7 +55,7 @@ public class MaxScoringTest {
         p.getScored().put("3k", 27); // make it not available;
 
         MaximumScoringStrategy strategy = new MaximumScoringStrategy();
-        assertEquals("3k not avail, ch gives 27, select ch", "ch", strategy.selectCategory(p));
+        assertEquals("3k not avail, ch gives 27, fh gives 25, select fh due to prob values", "fh", strategy.selectCategory(p));
     }
 
 }
