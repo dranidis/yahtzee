@@ -12,11 +12,15 @@ public class Connection implements Runnable {
     ObjectOutputStream out;
     Listener listener;
 
-    protected Connection() {}
+    protected Connection() {
+    }
 
     public Connection(Socket socket) {
         this.socket = socket;
         try {
+            // It is important that you create first the output stream and then the input
+            // stream. Otherwise it mmight deadlock.
+            // Creation of the input stream is a blocking operation
             out = new ObjectOutputStream(socket.getOutputStream());
             out.flush();
             in = new ObjectInputStream(socket.getInputStream());
@@ -39,7 +43,7 @@ public class Connection implements Runnable {
                 e.printStackTrace();
             }
         }
-        System.out.println("Connection disconnected");
+        System.out.println("Connection closed");
         close();
     }
 

@@ -12,6 +12,10 @@ public class Client extends Connection {
         try {
             this.socket = new Socket(host, port);
             System.out.println("Connected to server...");
+
+             // It is important that you create first the output stream and then the input
+            // stream. Otherwise it mmight deadlock.
+            // Creation of the input stream is a blocking operation
             out = new ObjectOutputStream(socket.getOutputStream());
             out.flush();
             in = new ObjectInputStream(socket.getInputStream());
