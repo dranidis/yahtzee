@@ -22,16 +22,16 @@ public class ConsolePlayer implements GamePlayer {
                 keep = s.nextInt();
 
                 if (keep > 0) {
-                    if (keep <= 6)
+                    if (keep < 6)
                         list.add(keep);
                     else
-                        System.out.println("1 to 6!");
+                        print("1 to 5!");
                 } else { // -1 will keep all
                     break;
                 }
             } else {
                 s.next();
-                System.out.println("1 to 6!");
+                print("1 to 5!");
             }
         } while (keep != 0);
         if (keep < 0) {
@@ -39,6 +39,10 @@ public class ConsolePlayer implements GamePlayer {
                 list.add(i);
         }
         return list.stream().mapToInt(i -> i).toArray();
+    }
+
+    protected void print(String string) {
+        System.out.println(string);
     }
 
     @Override
