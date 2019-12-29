@@ -21,7 +21,6 @@ public class Client {
     ObjectInputStream in;
     ObjectOutputStream out;
 
-    private int clientId;
     String name;
     Scanner scanner = new Scanner(System.in);
     GamePlayer consolePlayer = new ConsolePlayer();
@@ -120,7 +119,7 @@ public class Client {
         }
         System.out.println("1st player: " + firstPlayer);
 
-        for (int i = 0; i < 13; i++) { // TODO: 13 rounds
+        for (int i = 0; i < 13; i++) {
             print("\n-----ROUND " + (i + 1) + "------");
             round();
         }

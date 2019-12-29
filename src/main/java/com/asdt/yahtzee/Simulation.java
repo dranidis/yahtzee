@@ -5,7 +5,6 @@ import com.asdt.yahtzee.players.Bot;
 import com.asdt.yahtzee.players.GamePlayer;
 import com.asdt.yahtzee.players.MaximumScoringStrategy;
 import com.asdt.yahtzee.players.RandomKeepingStrategy;
-import com.asdt.yahtzee.players.RandomScoringStrategy;
 
 public class Simulation {
     Game game;

@@ -41,8 +41,10 @@ public class Server implements Runnable {
 
                 connection.sendObject(new Integer(id));
                 id++;
-                // TODO: change the server to accept more users.
-                // ServerGame should not be a singleton with 2 players.
+                /*
+                 * TODO: change the server to accept more users. ServerGame should not be a
+                 * singleton with 2 players.
+                 */
                 if (id == 2) {
                     System.out.println("Both players connected");
                     System.out.println("Not accepting any other connections.");
