@@ -10,8 +10,8 @@ import com.google.gson.JsonObject;
 /**
  * Game class:
  *
- * startRound should be called first to set the order of players
- * getNextPlayer should be called next to set the currentPlayer
+ * startRound should be called first to set the order of players getNextPlayer
+ * should be called next to set the currentPlayer
  *
  * before calling any other methods
  */
@@ -41,11 +41,12 @@ public class Game {
     }
 
     /**
-     * Choose category to score for all kept dice
+     * Choose category to score for all kept dice. Throws a RuntimeException if it
+     * is not the turn of the player.
      *
-     * @param playerName
-     * @param categoryName
-     * @return
+     * @param playerName   the name of the player calling
+     * @param categoryName the category to score
+     * @return the score
      */
     public int scoreACategory(String playerName, String categoryName) {
         Player called = players.get(playerName);
@@ -109,8 +110,8 @@ public class Game {
         return players.get(name).getScore();
     }
 
-	public Player getPlayer(String name) {
-		return players.get(name);
+    public Player getPlayer(String name) {
+        return players.get(name);
     }
 
     public Map<String, Player> getPlayers() {
