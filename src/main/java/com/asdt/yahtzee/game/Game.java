@@ -7,6 +7,14 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+/**
+ * Game class:
+ *
+ * startRound should be called first to set the order of players
+ * getNextPlayer should be called next to set the currentPlayer
+ *
+ * before calling any other methods
+ */
 public class Game {
 
     private int currentPlayerIndex = 0;
@@ -103,5 +111,9 @@ public class Game {
 
 	public Player getPlayer(String name) {
 		return players.get(name);
-	}
+    }
+
+    public Map<String, Player> getPlayers() {
+        return players;
+    }
 }

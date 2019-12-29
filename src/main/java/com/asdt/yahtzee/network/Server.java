@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.asdt.yahtzee.network.messages.IDMessage;
+
 public class Server implements Runnable {
     private ServerSocket serverSocket;
     private boolean running;
@@ -35,19 +37,21 @@ public class Server implements Runnable {
                 System.out.println("Waiting for clients...");
                 socket = serverSocket.accept();
                 System.out.println("New client connected...");
-                initSocket(socket);
+                Connection connection = new Connection(socket);
+                connections.put(id, connection);
+                connection.setId(id);
+
+                connection.sendObject(new Integer(id));
+                id++;
+                if(id == 2) {
+                    System.out.println("Both players connected");
+                    System.out.println("Not accepting any other connections.");
+                    break;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    private void initSocket(Socket socket) {
-        Connection connection = new Connection(socket);
-        connections.put(id, connection);
-        id++;
-        connection.sendObject(new Welcome());
-        new Thread(connection).start();
     }
 
     public void shutdown() {

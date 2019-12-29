@@ -12,6 +12,8 @@ public class Connection implements Runnable {
     ObjectOutputStream out;
     Listener listener;
 
+    int id;
+
     protected Connection() {
     }
 
@@ -24,7 +26,10 @@ public class Connection implements Runnable {
             out = new ObjectOutputStream(socket.getOutputStream());
             out.flush();
             in = new ObjectInputStream(socket.getInputStream());
-            listener = new Listener();
+            listener = new Listener(this);
+
+            new Thread(this).start();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -68,6 +73,10 @@ public class Connection implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+	public void setId(int id) {
+        this.id = id;
     }
 
 }
