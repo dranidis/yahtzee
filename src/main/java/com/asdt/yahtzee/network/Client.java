@@ -26,6 +26,7 @@ public class Client {
     GamePlayer consolePlayer = new ConsolePlayer();
     private String firstPlayer;
     boolean connected = false;
+    private int numOfPlayers;
 
     public Client(String host, int port) {
         try {
@@ -92,15 +93,23 @@ public class Client {
             e.printStackTrace();
         }
         System.out.print("Enter your name: ");
-
         name = scanner.next();
-        sendObject(new UserRequest(name));
+
+        System.out.print("Solo game (1), 2-player game (2): ");
+        String num = scanner.next();
+        while(!(num.equals("1") || num.equals("2"))) {
+            System.out.println("Please enter 1 or 2: ");
+            num = scanner.next();
+        }
+
+        numOfPlayers = Integer.parseInt(num);
+        sendObject(new UserRequest(name, numOfPlayers));
 
         // WAIT for game to start
         String str = "";
         while (!str.equals(Response.GAME_STARTED)) {
             try {
-                System.out.println("Please wait for the game to start....");
+                System.out.println("Please wait for (other players to join and) the game to start....");
                 str = (String) in.readObject();
                 System.out.println(Response.GAME_STARTED);
             } catch (ClassNotFoundException | IOException e) {
@@ -126,14 +135,18 @@ public class Client {
     }
 
     public void round() {
-        if (firstPlayer.equals(name)) {
+        if (numOfPlayers == 1)  {
             play(name);
-            play(OPPONENT);
-        } else {
-            play(OPPONENT);
-            play(name);
-        }
+        } else if (numOfPlayers == 2) {
+            if (firstPlayer.equals(name)) {
+                play(name);
+                play(OPPONENT);
+            } else {
+                play(OPPONENT);
+                play(name);
+            }
 
+        }
     }
 
     public void play(String name) {

@@ -36,20 +36,14 @@ public class Server implements Runnable {
                 socket = serverSocket.accept();
                 System.out.println("New client connected...");
                 Connection connection = new Connection(socket);
+                /*
+                 * TODO: remove from the map if a connection is closed.
+                 */
                 connections.put(id, connection);
                 connection.setId(id);
 
                 connection.sendObject(new Integer(id));
                 id++;
-                /*
-                 * TODO: change the server to accept more users. ServerGame should not be a
-                 * singleton with 2 players.
-                 */
-                if (id == 2) {
-                    System.out.println("Both players connected");
-                    System.out.println("Not accepting any other connections.");
-                    break;
-                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

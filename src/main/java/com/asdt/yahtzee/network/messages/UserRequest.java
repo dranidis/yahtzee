@@ -8,8 +8,11 @@ public class UserRequest implements Serializable {
 
     public String name;
 
-    public UserRequest(String name) {
+    public int numPlayers;
+
+    public UserRequest(String name, int numPlayers) {
         this.name = name;
+        this.numPlayers = numPlayers;
 	}
 
 }

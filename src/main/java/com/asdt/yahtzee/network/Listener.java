@@ -7,21 +7,16 @@ import com.asdt.yahtzee.network.messages.UserRequest;
 
 /**
  * A separate Listener object is created for each Connection object created by
- * the server. The listener is responsible for handling the messages sent by the
- * client associated to the connection. The listener can send messages to the
- * client by using the connection attribute.
+ * the server for each connecting client. The listener is responsible for
+ * handling the messages sent by the client associated to the connection. The
+ * listener can send messages to the client by using the connection attribute.
  */
 public class Listener {
 
     private Connection connection;
     String name;
 
-    /*
-     * TODO: currently a single game can be played by two players. Change: get a
-     * game from a factory and connect player connection to games. Each listener
-     * should remember the game.
-     */
-    ServerGame sg = ServerGame.getInstance();
+    ServerGame serverGame;
 
     public Listener(Connection connection) {
         this.connection = connection;
@@ -35,31 +30,36 @@ public class Listener {
     public void on(Object object) {
         System.out.println("RECEIVED from " + connection.id + " " + object.toString());
         if (object instanceof UserRequest) {
-            // a new user has given a name
-
-            if (sg.isAccepting()) {
+            GameFactory gameFactory = GameFactory.getInstance();
+            synchronized (gameFactory) {
+                // a new user has given a name and wants to play a numPlayer game
                 UserRequest user = (UserRequest) object;
-                this.name = user.name;
-                sg.addPlayer(user.name, connection);
+                serverGame = gameFactory.getGame(user.numPlayers);
 
-                if (sg.isReady()) {
-                    sg.start();
+                if (serverGame.isAccepting()) {
+                    this.name = user.name;
+                    serverGame.addPlayer(user.name, connection);
+
+                    if (serverGame.isReady()) {
+                        serverGame.start();
+                        gameFactory.removeGame(user.numPlayers);
+                    }
+                } else {
+                    // todo create new games for more users
                 }
-            } else {
-                // todo create new games for more users
             }
         } else if (object instanceof KeepRequest) {
             /* the client has sent the dice to keep */
             KeepRequest keepRequest = (KeepRequest) object;
-            sg.game.rollKeeping(name, keepRequest.getKeep());
+            serverGame.game.rollKeeping(name, keepRequest.getKeep());
 
             // clients are waiting
-            sg.broadCast(sg.game.toString());
+            serverGame.broadCast(serverGame.game.toString());
 
         } else if (object instanceof ScoreRequest) {
             /* the client has sent the category to score */
             ScoreRequest scoreRequest = (ScoreRequest) object;
-            int score = sg.game.scoreACategory(scoreRequest.name, scoreRequest.categoryName);
+            int score = serverGame.game.scoreACategory(scoreRequest.name, scoreRequest.categoryName);
 
             connection.sendObject(score);
 
@@ -69,12 +69,12 @@ public class Listener {
              */
             if (score >= 0) {
                 // clients are waiting
-                sg.broadCast(sg.game.toString());
+                serverGame.broadCast(serverGame.game.toString());
 
-                String player = sg.game.getNextPlayer();
+                String player = serverGame.game.getNextPlayer();
                 if (player == null) {
-                    sg.game.startRound();
-                    sg.game.getNextPlayer();
+                    serverGame.game.startRound();
+                    serverGame.game.getNextPlayer();
                 }
             }
         } else if (object instanceof String) {
@@ -82,7 +82,7 @@ public class Listener {
             String str = (String) object;
             if (str.equals(Request.CURRENTPLAYER)) {
                 // client is waiting
-                connection.sendObject(sg.game.getCurrentPlayersName());
+                connection.sendObject(serverGame.game.getCurrentPlayersName());
             } else
                 System.out.println(
                         "UNHANDLED String request from client:" + connection.id + " Request:" + object.toString());

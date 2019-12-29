@@ -7,19 +7,17 @@ import com.asdt.yahtzee.game.Game;
 import com.asdt.yahtzee.network.messages.Response;
 
 public class ServerGame {
-    private static ServerGame instance = new ServerGame();
 
     Map<String, Connection> gamePlayers;
 
     Game game;
 
-    protected ServerGame() {
+    private int numPlayers;
+
+    public ServerGame(int numPlayers) {
+        this.numPlayers = numPlayers;
         game = new Game();
         gamePlayers = new HashMap<>();
-    }
-
-    public static ServerGame getInstance() {
-        return instance;
     }
 
     public void addPlayer(String name, Connection connection) {
@@ -38,11 +36,11 @@ public class ServerGame {
     }
 
     public boolean isAccepting() {
-        return gamePlayers.size() < 2;
+        return gamePlayers.size() < numPlayers;
     }
 
     public boolean isReady() {
-        return gamePlayers.size() == 2;
+        return gamePlayers.size() == numPlayers;
     }
 
     public void broadCast(Object obj) {
