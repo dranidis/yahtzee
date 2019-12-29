@@ -29,5 +29,5 @@ java -jar target/yahtzee-1.0-SNAPSHOT.jar server 3000
 
 To start a client connecting to some host (e.g. localhost) and to port 3000
 ```
-java -jar target/yahtzee-1.0-SNAPSHOT.jar host 3000
+java -jar target/yahtzee-1.0-SNAPSHOT.jar localhost 3000
 ```
