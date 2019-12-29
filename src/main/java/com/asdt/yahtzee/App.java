@@ -15,20 +15,17 @@ public class App {
 
         int tries = 0;
 
-        if (args.length == 1) {
+        if (args.length == 0) {
+            (new UI(game)).gameStart();
+        } else if (args.length == 1) {
             try {
                 tries = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
                 System.err.println("Argument" + args[0] + " must be an integer.");
                 System.exit(1);
             }
-            if (tries == 0)
-                (new UI(game)).gameStart();
-            else
-                new SimStat(game, tries);
-        }
-
-        if (args.length == 2) {
+            new SimStat(game, tries);
+        } else if (args.length == 2) {
             String host = "";
             int port = 3000;
             try {
