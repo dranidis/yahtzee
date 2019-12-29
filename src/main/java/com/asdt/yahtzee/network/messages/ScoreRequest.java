@@ -1,4 +1,4 @@
-package com.asdt.yahtzee.network;
+package com.asdt.yahtzee.network.messages;
 
 import java.io.Serializable;
 

@@ -8,8 +8,12 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import com.asdt.yahtzee.network.messages.KeepRequest;
+import com.asdt.yahtzee.network.messages.Request;
+import com.asdt.yahtzee.network.messages.Response;
+import com.asdt.yahtzee.network.messages.ScoreRequest;
 import com.asdt.yahtzee.network.messages.UserRequest;
 import com.asdt.yahtzee.players.ConsolePlayer;
+import com.asdt.yahtzee.players.GamePlayer;
 
 public class Client {
     private static final String OPPONENT = "Opponent";
@@ -20,15 +24,28 @@ public class Client {
     private int clientId;
     String name;
     Scanner scanner = new Scanner(System.in);
-    ConsolePlayer consolePlayer = new ConsolePlayer();
+    GamePlayer consolePlayer = new ConsolePlayer();
     private String firstPlayer;
+    boolean connected = false;
 
     public Client(String host, int port) {
-
         try {
             this.socket = new Socket(host, port);
             System.out.println("Connected to server...");
+            connected = true;
+        } catch (IOException e1) {
+            System.out.println("Cannot connect to the server " + host + ":" + port);
+            // e1.printStackTrace();
+        }
+    }
 
+
+	public void start() {
+        if (!connected) {
+            System.out.println("Cannot start the client. Not connected!");
+            System.exit(1);
+        }
+        try {
             // It is important that you create first the output stream and then the input
             // stream. Otherwise it might deadlock.
             // Creation of the input stream is a blocking operation
@@ -45,14 +62,16 @@ public class Client {
             e.printStackTrace();
         }
 
-        start();
+        startUI();
     }
+
 
     public void sendObject(Object object) {
         try {
             out.writeObject(object);
             out.flush();
         } catch (IOException e) {
+            System.out.println("Cannot send to the server!");
             e.printStackTrace();
         }
     }
@@ -67,27 +86,28 @@ public class Client {
         }
     }
 
-    private void start() {
+    private void startUI() {
         try {
             TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Game options");
         System.out.print("Enter your name: ");
 
         name = scanner.next();
-
         sendObject(new UserRequest(name));
 
         // WAIT for game to start
-        try {
-            String str = (String) in.readObject();
-            System.out.println("Game starts..." + str);
-        } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();
+        String str = "";
+        while (!str.equals(Response.GAME_STARTED)) {
+            try {
+                System.out.println("Please wait for the game to start....");
+                str = (String) in.readObject();
+                System.out.println(Response.GAME_STARTED);
+            } catch (ClassNotFoundException | IOException e) {
+                e.printStackTrace();
+            }
         }
-
 
         sendObject(Request.CURRENTPLAYER);
         firstPlayer = "";
@@ -99,7 +119,6 @@ public class Client {
             e.printStackTrace();
         }
         System.out.println("1st player: " + firstPlayer);
-
 
         for (int i = 0; i < 13; i++) { // TODO: 13 rounds
             print("\n-----ROUND " + (i + 1) + "------");
@@ -225,4 +244,5 @@ public class Client {
     protected void print(Object string) {
         System.out.println(string.toString());
     }
+
 }

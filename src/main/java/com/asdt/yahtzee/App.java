@@ -44,7 +44,8 @@ public class App {
                 System.out.println("Server is running");
 
             } else {
-                new Client(host, port);
+                Client client = new Client(host, port);
+                client.start();
             }
         }
 

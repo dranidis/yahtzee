@@ -6,6 +6,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/**
+ * A new Connection is created for every client connecting to the server. The
+ * connection has a listener in order to handle and optionally respond to client
+ * messages. A sendObject method is used to send messages to the client.
+ */
 public class Connection implements Runnable {
     Socket socket;
     ObjectInputStream in;
@@ -13,9 +18,6 @@ public class Connection implements Runnable {
     Listener listener;
 
     int id;
-
-    protected Connection() {
-    }
 
     public Connection(Socket socket) {
         this.socket = socket;
@@ -37,23 +39,20 @@ public class Connection implements Runnable {
 
     @Override
     public void run() {
-        while (isAlive()) {
+        while (socket.isConnected()) {
             try {
                 listener.on(in.readObject());
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (EOFException e) {
+                System.out.println("EOFException handled. Exiting run Connection thread. id:" + id);
                 break;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        System.out.println("Connection closed");
+        System.out.println("Connection closed. id:" + id);
         close();
-    }
-
-    protected boolean isAlive() {
-        return socket.isConnected();
     }
 
     public void sendObject(Object object) {
@@ -61,6 +60,7 @@ public class Connection implements Runnable {
             out.writeObject(object);
             out.flush();
         } catch (IOException e) {
+            System.out.println("Cannot write to client. id:" + id);
             e.printStackTrace();
         }
     }
@@ -71,11 +71,12 @@ public class Connection implements Runnable {
             out.close();
             socket.close();
         } catch (IOException e) {
+            System.out.println("Cannot close connection to client. id:" + id);
             e.printStackTrace();
         }
     }
 
-	public void setId(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 

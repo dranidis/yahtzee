@@ -6,8 +6,6 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.asdt.yahtzee.network.messages.IDMessage;
-
 public class Server implements Runnable {
     private ServerSocket serverSocket;
     private boolean running;
@@ -43,7 +41,9 @@ public class Server implements Runnable {
 
                 connection.sendObject(new Integer(id));
                 id++;
-                if(id == 2) {
+                // TODO: change the server to accept more users.
+                // ServerGame should not be a singleton with 2 players.
+                if (id == 2) {
                     System.out.println("Both players connected");
                     System.out.println("Not accepting any other connections.");
                     break;
@@ -59,6 +59,7 @@ public class Server implements Runnable {
         try {
             serverSocket.close();
         } catch (IOException e) {
+            System.out.println("Cannot close serverSocket.");
             e.printStackTrace();
         }
     }

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.asdt.yahtzee.game.Game;
+import com.asdt.yahtzee.network.messages.Response;
 
 public class ServerGame {
     private static ServerGame instance = new ServerGame();
@@ -33,7 +34,7 @@ public class ServerGame {
 
         game.startRound();
         game.getNextPlayer();
-        broadCast("START");
+        broadCast(Response.GAME_STARTED);
     }
 
     public boolean isAccepting() {
