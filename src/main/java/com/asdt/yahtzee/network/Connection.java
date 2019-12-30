@@ -30,8 +30,6 @@ public class Connection implements Runnable {
             in = new ObjectInputStream(socket.getInputStream());
             listener = new Listener(this);
 
-            new Thread(this).start();
-
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -22,6 +22,10 @@ public class Game {
     private Map<String, Player> players = new HashMap<>();
     private ArrayList<Player> roundPlayers;
 
+    public Game() {
+        roundPlayers = new ArrayList<Player>(players.values());
+    }
+
     /**
      * Roll the dice. Optionally, provide any dice index to keep from previous roll.
      *
@@ -57,10 +61,9 @@ public class Game {
     }
 
     public int[] getDice() {
-        Die[] dice = currentPlayer.getDice();
         int diceNum[] = new int[5];
         for (int i = 0; i < 5; i++) {
-            diceNum[i] = dice[i].getNumber();
+            diceNum[i] = currentPlayer.getDice(i);
         }
         return diceNum;
     }

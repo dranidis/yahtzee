@@ -22,7 +22,7 @@ public class Client {
     ObjectOutputStream out;
 
     String name;
-    Scanner scanner = new Scanner(System.in);
+    Scanner scanner = new Scanner(System.in, "UTF-8");
     GamePlayer consolePlayer = new ConsolePlayer();
     private String firstPlayer;
     boolean connected = false;
@@ -39,32 +39,30 @@ public class Client {
         }
     }
 
-
-	public void start() {
+    public void start() {
         if (!connected) {
             System.out.println("Cannot start the client. Not connected!");
-            System.exit(1);
+            throw new RuntimeException();
+        } else {
+            try {
+                // It is important that you create first the output stream and then the input
+                // stream. Otherwise it might deadlock.
+                // Creation of the input stream is a blocking operation
+                out = new ObjectOutputStream(socket.getOutputStream());
+                out.flush();
+                in = new ObjectInputStream(socket.getInputStream());
+
+                int clientId = (Integer) in.readObject();
+                System.out.println("Your id is " + clientId);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            startUI();
         }
-        try {
-            // It is important that you create first the output stream and then the input
-            // stream. Otherwise it might deadlock.
-            // Creation of the input stream is a blocking operation
-            out = new ObjectOutputStream(socket.getOutputStream());
-            out.flush();
-            in = new ObjectInputStream(socket.getInputStream());
-
-            int clientId = (Integer) in.readObject();
-            System.out.println("Your id is " + clientId);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        startUI();
     }
-
 
     public void sendObject(Object object) {
         try {
@@ -97,7 +95,7 @@ public class Client {
 
         System.out.print("Solo game (1), 2-player game (2): ");
         String num = scanner.next();
-        while(!(num.equals("1") || num.equals("2"))) {
+        while (!(num.equals("1") || num.equals("2"))) {
             System.out.println("Please enter 1 or 2: ");
             num = scanner.next();
         }
@@ -135,7 +133,7 @@ public class Client {
     }
 
     public void round() {
-        if (numOfPlayers == 1)  {
+        if (numOfPlayers == 1) {
             play(name);
         } else if (numOfPlayers == 2) {
             if (firstPlayer.equals(name)) {

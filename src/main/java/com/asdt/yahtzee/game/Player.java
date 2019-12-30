@@ -44,13 +44,11 @@ public class Player {
         roll++;
     }
 
-    public Die[] getDice() {
-        return dice;
-    }
-
     // for testing
     public void setDice(Die[] dice) {
-        this.dice = dice;
+        this.dice = new Die[dice.length];
+        for (int i = 0; i < dice.length; i++)
+            this.dice[i] = dice[i];
     }
 
     // for testing
@@ -63,7 +61,10 @@ public class Player {
     }
 
     public boolean[] getKept() {
-        return kept;
+        boolean[] copy = new boolean[kept.length];
+        for (int i = 0; i < copy.length; i++)
+            copy[i] = kept[i];
+        return copy;
     }
 
     @Override
@@ -80,21 +81,21 @@ public class Player {
         int totalScore = getScore();
         // "1s", "2s","3s","4s","5s","6s","UB", "3k","4k","fh","s4","s5","5k","ch", "YB"
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("    Aces   (1s)  %s      3 of a Kind (3k)  %s\n", ifNullSpace(scored.get("1s")),
+        sb.append(String.format("    Aces   (1s)  %s      3 of a Kind (3k)  %s%n", ifNullSpace(scored.get("1s")),
                 ifNullSpace(scored.get("3k"))));
-        sb.append(String.format("    Twos   (2s)  %s      4 of a Kind (4k)  %s\n", ifNullSpace(scored.get("2s")),
+        sb.append(String.format("    Twos   (2s)  %s      4 of a Kind (4k)  %s%n", ifNullSpace(scored.get("2s")),
                 ifNullSpace(scored.get("4k"))));
-        sb.append(String.format("    Threes (3s)  %s      Full House  (fh)  %s\n", ifNullSpace(scored.get("3s")),
+        sb.append(String.format("    Threes (3s)  %s      Full House  (fh)  %s%n", ifNullSpace(scored.get("3s")),
                 ifNullSpace(scored.get("fh"))));
-        sb.append(String.format("    Fours  (4s)  %s      S. Straight (s4)  %s\n", ifNullSpace(scored.get("4s")),
+        sb.append(String.format("    Fours  (4s)  %s      S. Straight (s4)  %s%n", ifNullSpace(scored.get("4s")),
                 ifNullSpace(scored.get("s4"))));
-        sb.append(String.format("    Fives  (5s)  %s      L. Straight (s5)  %s\n", ifNullSpace(scored.get("5s")),
+        sb.append(String.format("    Fives  (5s)  %s      L. Straight (s5)  %s%n", ifNullSpace(scored.get("5s")),
                 ifNullSpace(scored.get("s5"))));
-        sb.append(String.format("    Sixes  (6s)  %s      Yahtzee     (5k)  %s\n", ifNullSpace(scored.get("6s")),
+        sb.append(String.format("    Sixes  (6s)  %s      Yahtzee     (5k)  %s%n", ifNullSpace(scored.get("6s")),
                 ifNullSpace(scored.get("5k"))));
-        sb.append(String.format("    Sect. Bonus  %s      Chance      (ch)  %s\n", ifNullSpace(scored.get("UB")),
+        sb.append(String.format("    Sect. Bonus  %s      Chance      (ch)  %s%n", ifNullSpace(scored.get("UB")),
                 ifNullSpace(scored.get("ch"))));
-        sb.append(String.format("    Sect. Total  %s      Yahtzee Bonus     %s       TOTAL   %s\n",
+        sb.append(String.format("    Sect. Total  %s      Yahtzee Bonus     %s       TOTAL   %s%n",
                 ifNullSpace(upperScore), ifNullSpace(scored.get("YB")), ifNullSpace(totalScore)));
         return sb.toString();
     }
@@ -107,15 +108,16 @@ public class Player {
     }
 
     private String keptToString() {
-        String s = " ";
+        StringBuffer s = new StringBuffer();
+        s.append(" ");
         for (int i = 0; i < 5; i++) {
             if (kept[i]) {
-                s += "K  ";
+                s.append("K  ");
             } else {
-                s += "-  ";
+                s.append("-  ");
             }
         }
-        return s;
+        return s.toString();
     }
 
     public int score(String categoryName) {
@@ -197,6 +199,10 @@ public class Player {
                 .add(scored.get("5k")).add(scored.get("ch")).add(scored.get("YB"));
 
         return sb.getSum();
+    }
+
+    public int getDice(int i) {
+        return dice[i].getNumber();
     }
 
 }

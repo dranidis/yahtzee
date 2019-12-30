@@ -15,9 +15,9 @@ public class RandomScoringStrategy implements ScoringStrategy {
         String randomCategory = "";
         Set<String> cat = ScoreFactory.getInstance().getCategories();
         Map<String, Integer> alreadyScored = player.getScored();
-        for (String as : alreadyScored.keySet()) {
-            if (alreadyScored.get(as) != null)
-                cat.remove(as);
+		for (Map.Entry<String, Integer> as : alreadyScored.entrySet()) {
+            if (as.getValue() != null)
+                cat.remove(as.getKey());
         }
         int size = cat.size();
         int index = r.nextInt(size);

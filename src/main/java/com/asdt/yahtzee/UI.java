@@ -19,10 +19,10 @@ public class UI {
 
     public UI(Game game) {
         this.game = game;
+        s = new Scanner(System.in, "UTF-8");
     }
 
     public void gameStart() {
-        s = new Scanner(System.in);
 
         gamePlayers = new HashMap<>();
 

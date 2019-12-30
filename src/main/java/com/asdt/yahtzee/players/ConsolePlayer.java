@@ -9,7 +9,7 @@ public class ConsolePlayer implements GamePlayer {
     Scanner s;
 
     public ConsolePlayer() {
-        s = new Scanner(System.in);
+        s = new Scanner(System.in, "UTF-8");
     }
 
     @Override

@@ -23,9 +23,9 @@ public class SimStat {
             if (score > max) max = score;
             if (score < min) min = score;
         }
-        System.out.println(String.format("Avg: %6.2f \n", totalScore/games));
-        System.out.println(String.format("Min: %4d \n", min));
-        System.out.println(String.format("Max: %4d \n", max));
+        System.out.println(String.format("Avg: %6.2f", totalScore/games));
+        System.out.println(String.format("Min: %4d", min));
+        System.out.println(String.format("Max: %4d", max));
     }
 
 

@@ -12,18 +12,21 @@ public class KeepRequest implements Serializable {
     public KeepRequest(String name, int[] keep) {
         this.name = name;
         this.keep = new int[keep.length];
-        for(int i=0; i< keep.length; i++) {
+        for (int i = 0; i < keep.length; i++) {
             this.keep[i] = keep[i];
         }
-	}
+    }
 
-	public void print() {
-        for(int i =0; i < keep.length; i++) {
+    public void print() {
+        for (int i = 0; i < keep.length; i++) {
             System.out.println(keep[i]);
         }
     }
 
     public int[] getKeep() {
-        return keep;
+        int[] keepCopy = new int[keep.length];
+        for (int i = 0; i < keep.length; i++)
+            keepCopy[i] = keep[i];
+        return keepCopy;
     }
 }

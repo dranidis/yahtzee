@@ -36,14 +36,15 @@ public class Server implements Runnable {
                 socket = serverSocket.accept();
                 System.out.println("New client connected...");
                 Connection connection = new Connection(socket);
+                new Thread(connection).start();
                 /*
                  * TODO: remove from the map if a connection is closed.
                  */
                 connections.put(id, connection);
                 connection.setId(id);
 
-                connection.sendObject(new Integer(id));
-                id++;
+                connection.sendObject(Integer.valueOf(id));
+                increaseId();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -60,4 +61,7 @@ public class Server implements Runnable {
         }
     }
 
+    public static void increaseId() {
+        id++;
+    }
 }
