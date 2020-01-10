@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 /**
  * Game class:
  *
@@ -21,6 +18,8 @@ public class Game {
     private Player currentPlayer;
     private Map<String, Player> players = new HashMap<>();
     private ArrayList<Player> roundPlayers;
+
+    int round = 0;
 
     public Game() {
         roundPlayers = new ArrayList<Player>(players.values());
@@ -72,16 +71,6 @@ public class Game {
         return currentPlayer.getKept();
     }
 
-    public JsonObject toJson() {
-        Gson gson = new Gson();
-        String json = gson.toJson(currentPlayer);
-        // System.out.println(json);
-        JsonObject jsonObject = gson.fromJson(json, JsonObject.class); // parse
-        jsonObject.addProperty("score", currentPlayer.getScore()); // modify
-        // return currentPlayer.toString();
-        return jsonObject;
-    }
-
     @Override
     public String toString() {
         return currentPlayer.toString();
@@ -100,9 +89,13 @@ public class Game {
     }
 
     public void startRound() {
+        round++;
         roundPlayers = new ArrayList<Player>(players.values());
         currentPlayerIndex = 0;
-        currentPlayer = roundPlayers.get(currentPlayerIndex);
+        if (roundPlayers.size() > 0)
+            currentPlayer = roundPlayers.get(currentPlayerIndex);
+        else
+            throw new RuntimeException("Game: no players in the list");
     }
 
     public String getCurrentPlayersName() {
@@ -120,4 +113,13 @@ public class Game {
     public Map<String, Player> getPlayers() {
         return players;
     }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public int getRound() {
+        return round;
+    }
+
 }
