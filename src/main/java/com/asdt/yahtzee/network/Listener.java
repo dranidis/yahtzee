@@ -44,8 +44,6 @@ public class Listener {
                         serverGame.start();
                         gameFactory.removeGame(user.numPlayers);
                     }
-                } else {
-                    // todo create new games for more users
                 }
             }
         } else if (object instanceof KeepRequest) {

@@ -42,7 +42,7 @@ public class Simulation {
             // interact with the player
             int[] array = gp.rollKeeping();
 
-            if (array.length == 5 || (array.length == 1 && array[0] == -1)) {
+            if (array.length == 5 || array.length == 1 && array[0] == -1) {
                 break;
             }
             game.rollKeeping(name, array);

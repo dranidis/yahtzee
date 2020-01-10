@@ -1,6 +1,7 @@
 package com.asdt.yahtzee.game;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -91,6 +92,21 @@ public class PlayerTest {
         assertEquals("score fh as joker", 25, p.score("fh"));
         assertEquals("bonus yahtzee", 100, p.scored.get("YB").intValue());
         assertEquals("Total ", 62 + 130 + 100 + 25, p.getScore());
+    }
+
+    @Test
+    public void thereIsNoYahtzeeBonusIfYahtzeeIs0() {
+        Map<String, Integer> mockScored = new HashMap<>();
+
+        mockScored.put("5k", 0);
+
+        Player p = new Player("p");
+        p.setScored(mockScored);
+        p.setDice(new Die[] {new Die(2), new Die(2), new Die(2), new Die(2), new Die(2)});
+
+        assertEquals("score fh as joker", 10, p.score("2s"));
+        assertNull("bonus yahtzee", p.scored.get("YB"));
+        assertEquals("Total ", 10, p.getScore());
     }
 
     @Test

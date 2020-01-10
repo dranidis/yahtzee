@@ -171,7 +171,7 @@ public class Client {
                 // interact with the player
                 int[] array = consolePlayer.rollKeeping();
 
-                if (array.length == 5 || (array.length == 1 && array[0] == -1)) {
+                if (array.length == 5 || array.length == 1 && array[0] == -1) {
                     print("Keeping all");
                     sendObject(new KeepRequest(name, new int[] { 1, 2, 3, 4, 5 }));
                     gameString = "";
