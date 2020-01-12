@@ -1,5 +1,7 @@
 package com.asdt.yahtzee.network;
 
+import com.asdt.yahtzee.game.InvalidScoringCategory;
+import com.asdt.yahtzee.game.UnknownScoringCategory;
 import com.asdt.yahtzee.network.messages.KeepRequest;
 import com.asdt.yahtzee.network.messages.Request;
 import com.asdt.yahtzee.network.messages.ScoreRequest;
@@ -57,7 +59,12 @@ public class Listener {
         } else if (object instanceof ScoreRequest) {
             /* the client has sent the category to score */
             ScoreRequest scoreRequest = (ScoreRequest) object;
-            int score = serverGame.game.scoreACategory(scoreRequest.name, scoreRequest.categoryName);
+            int score;
+            try {
+                score = serverGame.game.scoreACategory(scoreRequest.name, scoreRequest.categoryName);
+            } catch (UnknownScoringCategory | InvalidScoringCategory e) {
+                score = -1;
+            }
 
             connection.sendObject(score);
 

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.asdt.yahtzee.game.InvalidScoringCategory;
 import com.asdt.yahtzee.game.Player;
 import com.asdt.yahtzee.game.score.ScoreFactory;
 
@@ -20,7 +21,12 @@ public class MaximumScoringStrategy implements ScoringStrategy {
         for (String category : categories) {
             if (player.getScored().get(category) != null)
                 continue;
-            double score = player.getScoreForCategory(category);
+            int score;
+            try {
+                score = player.getScoreForCategory(category);
+            } catch (InvalidScoringCategory e) {
+                score = -1;
+            }
             if (score < 0)
                 continue;
             score += sum - probValues.get(category);

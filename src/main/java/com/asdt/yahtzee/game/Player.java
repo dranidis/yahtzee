@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.asdt.yahtzee.game.score.ScoreFactory;
-import com.asdt.yahtzee.game.score.ScoreStrategy;
 import com.asdt.yahtzee.game.util.SumNullBuilder;
 
 public class Player {
@@ -52,6 +51,12 @@ public class Player {
             this.dice[i] = dice[i];
     }
 
+    public void setDice(int... dice) {
+        this.dice = new Die[dice.length];
+        for (int i = 0; i < dice.length; i++)
+            this.dice[i] = new Die(dice[i]);
+    }
+
     // for testing
     void setScored(Map<String, Integer> scored) {
         this.scored = scored;
@@ -78,9 +83,16 @@ public class Player {
     }
 
     public Map<String, Integer> getFullScoreSheet() {
+        // call this first in order to update the score sheet
+        // UB etc.
+        //
+        int totalScore = getScore();
+
+        // then copy the score sheet
+        //
         Map<String, Integer> fullScoreSheet = new HashMap<>(scored);
         fullScoreSheet.put("US", getUSScore());
-        fullScoreSheet.put("TS", getScore());
+        fullScoreSheet.put("TS", totalScore);
         if (fullScoreSheet.get("UB") == null) {
             fullScoreSheet.put("UB", 0);
         }
@@ -88,7 +100,7 @@ public class Player {
             fullScoreSheet.put("YB", 0);
         }
         return fullScoreSheet;
-    } 
+    }
 
     private String getScoreSheet() {
         int upperScore = getUSScore();
@@ -134,13 +146,13 @@ public class Player {
         return s.toString();
     }
 
-    public int score(String categoryName) {
+    public int score(String categoryName) throws InvalidScoringCategory {
         int scoreForCategory = getScoreForCategory(categoryName);
         if (scoreForCategory < 0) {
             return scoreForCategory;
         }
         // update sheet
-        if (isYahtzee()) {
+        if (isBonusYahtzee()) {
             SumNullBuilder sb = new SumNullBuilder();
             sb.add(scored.get("YB")).add(100);
             scored.put("YB", sb.getSum());
@@ -155,7 +167,7 @@ public class Player {
         return scoreForCategory;
     }
 
-    public int getScoreForCategory(String categoryName) {
+    public int getScoreForCategory(String categoryName) throws InvalidScoringCategory {
         // already scored category
         if (scored.get(categoryName) != null)
             return -1;
@@ -164,29 +176,35 @@ public class Player {
         if (categoryName.equals("UB") || categoryName.equals("YB"))
             return -3;
 
-        ScoreStrategy ss = ScoreFactory.getInstance().getScoreStrategy(categoryName);
-        // unimplemented strategy, invalid category name
-        if (ss == null) {
-            System.err.println("Not implemented strategy: " + categoryName);
-            return -2;
-        }
-
         boolean isJoker = false;
 
-        if (isYahtzee()) {
+        if (isJokerYahtzee()) {
             int num = dice[0].getNumber();
             String catUpperSection = "" + num + "s";
-            if (!categoryName.equals(catUpperSection) && scored.get(catUpperSection) == null) {
-                return -5;
+            if (isJokerCategory(categoryName) && scored.get(catUpperSection) == null) {
+                // if (!categoryName.equals(catUpperSection) && scored.get(catUpperSection) == null) {
+                    // return -5;
+                throw new InvalidScoringCategory(categoryName, num);
             }
             isJoker = true;
         }
 
-        int s = ss.calculate(new ArrayList<Die>(Arrays.asList(dice)), isJoker);
+        int s = ScoreFactory.getInstance().getScoreStrategy(categoryName)
+                .calculate(new ArrayList<Die>(Arrays.asList(dice)), isJoker);
         return s;
     }
 
-    private boolean isYahtzee() {
+    private boolean isJokerCategory(String categoryName) {
+        return categoryName.equals("fh") || categoryName.equals("s4") || categoryName.equals("s5");
+    }
+
+    private boolean isJokerYahtzee() {
+        return scored.get("5k") != null && dice[0].getNumber() == dice[1].getNumber()
+                && dice[1].getNumber() == dice[2].getNumber() && dice[2].getNumber() == dice[3].getNumber()
+                && dice[3].getNumber() == dice[4].getNumber();
+    }
+
+    private boolean isBonusYahtzee() {
         return scored.get("5k") != null && scored.get("5k") == 50 && dice[0].getNumber() == dice[1].getNumber()
                 && dice[1].getNumber() == dice[2].getNumber() && dice[2].getNumber() == dice[3].getNumber()
                 && dice[3].getNumber() == dice[4].getNumber();
@@ -222,6 +240,5 @@ public class Player {
     public int getRoll() {
         return roll;
     }
-
 
 }

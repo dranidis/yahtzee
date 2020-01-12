@@ -1,6 +1,8 @@
 package com.asdt.yahtzee;
 
 import com.asdt.yahtzee.game.Game;
+import com.asdt.yahtzee.game.InvalidScoringCategory;
+import com.asdt.yahtzee.game.UnknownScoringCategory;
 import com.asdt.yahtzee.players.Bot;
 import com.asdt.yahtzee.players.GamePlayer;
 import com.asdt.yahtzee.players.MaximumScoringStrategy;
@@ -50,13 +52,22 @@ public class Simulation {
         // interact with the player
         String categoryName = gp.selectCategory();
 
-        int score = game.scoreACategory(name, categoryName);
+        int score;
+        try {
+            score = game.scoreACategory(name, categoryName);
+        } catch (UnknownScoringCategory | InvalidScoringCategory e) {
+            score = -1;
+        }
         while (score < 0) {
             // System.out.println("Invalid choice! " + "(score=" + score + ")");
 
             // interact with the player
             categoryName = gp.selectCategory();
-            score = game.scoreACategory(name, categoryName);
+            try {
+                score = game.scoreACategory(name, categoryName);
+            } catch (UnknownScoringCategory | InvalidScoringCategory e) {
+                score = -1;
+            }
         }
     }
 }
